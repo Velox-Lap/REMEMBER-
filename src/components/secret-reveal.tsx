@@ -81,9 +81,10 @@ export function SecretReveal() {
               className="final-reveal-button"
               type="button"
               onClick={() => setFinalOpen(true)}
+              disabled={revealed.length !== secretContent.flowers.length}
             >
               <span>THE LAST LITTLE SECRET</span>
-              <strong>Open the final chapter <i aria-hidden="true">↗</i></strong>
+              <strong>{revealed.length === secretContent.flowers.length ? "Open the final chapter" : "Find all three flowers first"} <i aria-hidden="true">↗</i></strong>
             </button>
           ) : (
             <div className="final-reveal-card" role="status">
