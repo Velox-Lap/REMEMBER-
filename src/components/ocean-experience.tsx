@@ -1,16 +1,16 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";\nimport { useRef } from "react";
 import { oceanContent } from "@/content/ocean";
 
 export function OceanExperience() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section className="ocean-experience" id="ocean" aria-labelledby="ocean-title">
+    <section ref={sectionRef} className="ocean-experience" id="ocean" aria-labelledby="ocean-title">
       <div className="ocean-sky" aria-hidden="true">
         <div className="ocean-sun-glow" />
-        <div className="ocean-sun-disc" />
+        <motion.div className="ocean-sun-disc" style={reduceMotion ? undefined : { y: sunOffset }} />
         <div className="ocean-cloud ocean-cloud--one" />
         <div className="ocean-cloud ocean-cloud--two" />
         <div className="ocean-birds">⌁　⌁</div>
@@ -35,7 +35,7 @@ export function OceanExperience() {
       </div>
 
       <div className="ocean-horizon-scene" aria-hidden="true">
-        <div className="ocean-distant-shore" />
+        <motion.div className="ocean-distant-shore" style={reduceMotion ? undefined : { y: shoreOffset }} />
         <div className="ocean-water">
           <div className="ocean-reflection" />
           <motion.div
