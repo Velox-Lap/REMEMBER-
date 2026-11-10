@@ -2,6 +2,7 @@ import { ActCard } from "@/components/act-card";
 import { SectionHeading } from "@/components/section-heading";
 import { CinematicIntro } from "@/components/cinematic-intro";
 import { StoryMemories } from "@/components/story-memories";
+import { LetterExperience } from "@/components/letter-experience";
 import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
@@ -39,6 +40,8 @@ export default function HomePage() {
           <span className="handwritten">The details will make it yours.</span>
         </div>
       </section>
+
+      <LetterExperience />
 
       <section className="ocean-teaser" id="ocean">
         <div className="ocean-teaser-content">
