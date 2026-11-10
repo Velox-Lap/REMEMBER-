@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import "./experience-navigation.css";
+import "./mixtape.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
