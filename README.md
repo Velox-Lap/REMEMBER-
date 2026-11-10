@@ -7,7 +7,7 @@ A frontend-only, cinematic storytelling website built around nature, ocean image
 ## Project status
 
 - [x] Phase 1 — Art direction and design system
-- [ ] Phase 2 — Experience foundation
+- [x] Phase 2 — Experience foundation
 - [ ] Phase 3 — Cinematic intro
 - [ ] Phase 4 — Story and memories
 - [ ] Phase 5 — Interactive letter
@@ -21,6 +21,10 @@ A frontend-only, cinematic storytelling website built around nature, ocean image
 - Personal content is maintained as editable static data in the repository.
 - Responsive across desktop, tablet, and mobile.
 - Accessibility, reduced-motion support, and performance are baseline requirements.
+
+## Frontend foundation
+
+The initial App Router scaffold, global design tokens, responsive page shell, reusable editorial components, and static content configuration are in place. Install dependencies with `npm install`, then run `npm run dev`.
 
 ## Documentation
 
