@@ -5,6 +5,7 @@ import { StoryMemories } from "@/components/story-memories";
 import { LetterExperience } from "@/components/letter-experience";
 import { OceanExperience } from "@/components/ocean-experience";
 import { SecretReveal } from "@/components/secret-reveal";
+import { MixtapeExperience } from "@/components/mixtape-experience";
 import { ExperienceNavigation } from "@/components/experience-navigation";
 import { acts, siteContent } from "@/content/site";
 
@@ -47,6 +48,7 @@ export default function HomePage() {
       </section>
 
       <LetterExperience />
+      <MixtapeExperience />
       <OceanExperience />
       <SecretReveal />
 
