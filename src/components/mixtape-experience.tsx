@@ -67,9 +67,9 @@ export function MixtapeExperience() {
       title: file.name.replace(/\.[^/.]+$/, ""),
       fileName: file.name,
       src: URL.createObjectURL(file),
-      side: (tracks.length + index) % 2 === 0 ? "A" : "B",
+      side: (playableTracks.length + index) % 2 === 0 ? "A" : "B",
     }));
-    setTracks((current) => [...current, ...additions]);
+    setTracks((current) => [...current.filter((track) => track.src), ...additions]);
     setSide(additions[0].side);
     setActiveId(additions[0].id);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -154,7 +154,9 @@ export function MixtapeExperience() {
             </div>
 
             <div className="mixtape-track-list">
-              {visibleTracks.map((track, index) => (
+              {visibleTracks.length === 0 ? (
+                <p className="mixtape-empty-side">This side is waiting for a song.</p>
+              ) : visibleTracks.map((track, index) => (
                 <button type="button" key={track.id} className={`mixtape-track${activeId === track.id ? " is-current" : ""}`} onClick={() => setActiveId(track.id)}>
                   <span className="mixtape-track-index">{String(index + 1).padStart(2, "0")}</span>
                   <span className="mixtape-track-info"><strong>{track.title}</strong><small>{track.src ? track.fileName : "A place for a favourite song"}</small></span>
