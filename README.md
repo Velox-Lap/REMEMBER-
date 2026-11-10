@@ -8,12 +8,12 @@ A frontend-only, cinematic storytelling website built around nature, ocean image
 
 - [x] Phase 1 — Art direction and design system
 - [x] Phase 2 — Experience foundation
-- [ ] Phase 3 — Cinematic intro
-- [ ] Phase 4 — Story and memories
-- [ ] Phase 5 — Interactive letter
-- [ ] Phase 6 — Ocean experience
-- [ ] Phase 7 — Secret and final reveal
-- [ ] Phase 8 — Optimization and QA
+- [x] Phase 3 — Cinematic intro
+- [x] Phase 4 — Story and memories
+- [x] Phase 5 — Interactive letter
+- [x] Phase 6 — Ocean experience
+- [x] Phase 7 — Secret and final reveal
+- [ ] Phase 8 — Optimization and QA (in progress)
 
 ## Constraints
 
@@ -24,7 +24,7 @@ A frontend-only, cinematic storytelling website built around nature, ocean image
 
 ## Frontend foundation
 
-The initial App Router scaffold, global design tokens, responsive page shell, reusable editorial components, and static content configuration are in place. Install dependencies with `npm install`, then run `npm run dev`.
+The App Router experience is implemented with editable static content, responsive sections, interactive letter and memory viewer, ocean scene, and secret reveal. Install dependencies with `npm install`, then run `npm run dev`.
 
 ## Documentation
 
@@ -36,4 +36,4 @@ The initial App Router scaffold, global design tokens, responsive page shell, re
 
 Next.js, TypeScript, Tailwind CSS, Framer Motion, GSAP/ScrollTrigger (only where justified), and Lucide.
 
-Implementation begins in Phase 2 after the visual system is approved.
+The current implementation is frontend-only. Run `npm run typecheck`, `npm run lint`, and `npm run build` before deployment.
