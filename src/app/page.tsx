@@ -12,6 +12,7 @@ import { acts, siteContent } from "@/content/site";
 export default function HomePage() {
   return (
     <>
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <ExperienceNavigation />
       <main id="main-content">
       <CinematicIntro />
