@@ -760,3 +760,59 @@ a:focus-visible, button:focus-visible {
 .skip-link:focus {
   transform: translateY(0);
 }
+
+
+.system-state {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 8vw, 96px);
+  color: var(--color-cream);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(168,185,160,.16), transparent 42%),
+    linear-gradient(145deg, #1c3d32, #203d33 58%, #172f29);
+}
+.system-state-eyebrow {
+  color: #c5d0bb;
+  font-size: 9px;
+  letter-spacing: .2em;
+}
+.system-state h1 {
+  margin: 28px 0 16px;
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(52px, 8vw, 90px);
+  font-weight: 400;
+  line-height: .92;
+  letter-spacing: -.04em;
+}
+.system-state h1 em { color: #c5d0bb; font-weight: 400; }
+.system-state p {
+  max-width: 430px;
+  color: rgba(248,246,239,.68);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.system-state button,
+.system-state a {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 46px;
+  margin-top: 24px;
+  padding: 0 18px;
+  border: 1px solid rgba(248,246,239,.42);
+  color: var(--color-cream);
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  letter-spacing: .14em;
+  cursor: pointer;
+}
+.system-state button:focus-visible,
+.system-state a:focus-visible {
+  outline: 2px solid #d7e1cc;
+  outline-offset: 4px;
+}
