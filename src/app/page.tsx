@@ -9,7 +9,7 @@ import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
   return (
-    <main>
+    <main id="main-content">
       <CinematicIntro />
 
       <section className="acts-section section-wrap" id="garden">
@@ -47,7 +47,7 @@ export default function HomePage() {
       <OceanExperience />
       <SecretReveal />
 
-      <footer className="site-footer" id="final">
+      <footer className="site-footer" id="footer">
         <span>{siteContent.footerNote}</span>
         <span>A JOURNEY THROUGH OUR LITTLE UNIVERSE</span>
       </footer>
