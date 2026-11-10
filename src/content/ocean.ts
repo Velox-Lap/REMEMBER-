@@ -1,5 +1,5 @@
 export const oceanContent = {
-  eyebrow: "ACT II — THE OCEAN",
+  eyebrow: "CHAPTER 07 — THE OCEAN",
   title: "Some things stay,",
   titleAccent: "like the sea.",
   introduction: "A place for the moments that feel endless — open skies, quiet shores, and memories carried by the tide.",
