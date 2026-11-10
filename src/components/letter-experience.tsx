@@ -24,7 +24,7 @@ export function LetterExperience() {
           <motion.div
             className="letter-paper"
             initial={false}
-            animate={isOpen ? { y: reduceMotion ? 0 : -88, opacity: 1 } : { y: 0, opacity: 0.92 }}
+            animate={isOpen ? { y: reduceMotion ? 0 : -225, opacity: 1 } : { y: 0, opacity: 0.92 }}
             transition={{ duration: reduceMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1], delay: isOpen && !reduceMotion ? 0.35 : 0 }}
             aria-hidden={!isOpen}
           >
