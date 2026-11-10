@@ -5,8 +5,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { letterContent } from "@/content/letter";
 
 export function LetterExperience() {
-  const [isOpen, setIsOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const [isOpen, setIsOpen] = useState(false);\n  const [copyLabel, setCopyLabel] = useState("COPY LETTER");
+  const reduceMotion = useReducedMotion();\n\n  const copyLetter = async () => {\n    const text = [letterContent.recipient, ...letterContent.paragraphs, letterContent.closing, letterContent.signature].join("\\n\\n");\n    try {\n      await navigator.clipboard.writeText(text);\n      setCopyLabel("COPIED");\n    } catch {\n      setCopyLabel("COPY UNAVAILABLE");\n    }\n  };
 
   return (
     <section className="letter-section" id="letter" aria-labelledby="letter-title">
