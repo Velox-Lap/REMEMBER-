@@ -19,6 +19,7 @@ export function SecretReveal() {
   };
 
   return (
+    <>
     <section className="secret-section" id="secret">
       <div className="secret-shell">
         <header className="secret-heading">
@@ -106,5 +107,6 @@ export function SecretReveal() {
         </div>
       </div>
     </section>
+    </>
   );
 }
