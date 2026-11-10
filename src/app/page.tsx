@@ -1,6 +1,7 @@
 import { ActCard } from "@/components/act-card";
 import { SectionHeading } from "@/components/section-heading";
 import { CinematicIntro } from "@/components/cinematic-intro";
+import { StoryMemories } from "@/components/story-memories";
 import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
@@ -26,7 +27,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="foundation-note" id="story">
+      <StoryMemories />
+
+      <section className="foundation-note">
         <div className="foundation-note-inner">
           <span className="eyebrow">A NOTE BEFORE WE BEGIN</span>
           <p>
