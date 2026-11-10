@@ -74,8 +74,6 @@ export function SecretReveal() {
             <span style={{ width: `${(revealed.length / secretContent.flowers.length) * 100}%` }} />
           </div>
         </div>
-
-        </div>
       </div>
     </section>
 
