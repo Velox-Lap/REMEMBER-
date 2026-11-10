@@ -1,0 +1,143 @@
+
+/* Mixtape keepsake — tactile cassette, botanical palette and responsive audio console */
+#mixtape { scroll-margin-top: 28px; }
+.mixtape-section {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(88px, 11vw, 150px) var(--page-gutter);
+  color: #f7f5ed;
+  background:
+    radial-gradient(ellipse at 12% 72%, rgba(165,194,177,.13), transparent 35%),
+    radial-gradient(ellipse at 88% 18%, rgba(169,212,229,.12), transparent 32%),
+    linear-gradient(145deg, #203e34, #294d40 52%, #1b392f);
+}
+.mixtape-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .12;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(246,244,226,.7) .55px, transparent .8px);
+  background-size: 26px 26px;
+}
+.mixtape-shell { position: relative; z-index: 1; width: min(1120px, 100%); margin: 0 auto; }
+.mixtape-intro { max-width: 620px; margin: 0 auto 64px; text-align: center; }
+.mixtape-eyebrow, .mixtape-small-label {
+  color: #c2d1bc; font-size: 8px; letter-spacing: .22em;
+}
+.mixtape-intro h2 {
+  margin: 22px 0 18px; font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(54px, 8vw, 92px); font-weight: 400; line-height: .9; letter-spacing: -.045em;
+}
+.mixtape-intro h2 em { color: #c6d4c0; font-weight: 400; }
+.mixtape-intro p { max-width: 440px; margin: 0 auto; color: rgba(247,245,237,.66); font-size: 12px; line-height: 1.9; }
+.mixtape-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, .88fr); align-items: center; gap: clamp(35px, 7vw, 90px); }
+.cassette-player { width: 100%; max-width: 520px; margin: auto; }
+.cassette-player-topline, .cassette-player-bottomline {
+  display: flex; justify-content: space-between; gap: 12px; color: rgba(246,244,231,.52);
+  font-size: 7px; letter-spacing: .18em;
+}
+.cassette-player-topline { margin: 0 8px 14px; }
+.cassette-player-bottomline { margin: 14px 8px 0; }
+.cassette-shell {
+  position: relative; padding: 7%; border: 1px solid rgba(247,245,237,.42); border-radius: 18px;
+  background: linear-gradient(145deg, #e4dfce, #bcb9a5 52%, #d5d0bc);
+  box-shadow: 0 32px 75px rgba(6,22,16,.34), inset 0 2px 3px rgba(255,255,255,.85), inset 0 -5px 10px rgba(47,58,43,.18);
+  transform: rotate(-3deg);
+}
+.cassette-label {
+  position: relative; min-height: 300px; overflow: hidden; padding: 22px 24px 16px; border-radius: 9px;
+  color: #254437; background: linear-gradient(150deg, #f4f0df, #dfe4d1 62%, #c6d5c5);
+  box-shadow: inset 0 0 0 1px rgba(52,76,57,.16);
+}
+.cassette-label::before {
+  content: ""; position: absolute; inset: 0; opacity: .2;
+  background: repeating-linear-gradient(0deg, transparent 0 24px, rgba(60,91,67,.2) 25px 26px);
+}
+.cassette-label-top, .cassette-label-bottom { position: relative; display: flex; justify-content: space-between; gap: 8px; font-size: 7px; letter-spacing: .15em; }
+.cassette-title { position: relative; margin-top: 18px; font-family: var(--font-cormorant), Georgia, serif; font-size: clamp(36px, 5vw, 54px); line-height: .9; }
+.cassette-title i { display: block; margin-top: 6px; font-family: var(--font-caveat), cursive; font-size: 19px; font-weight: 400; }
+.cassette-flower { position: absolute; top: 52px; right: 42px; width: 68px; height: 68px; }
+.cassette-flower span { position: absolute; left: 27px; top: 4px; width: 15px; height: 30px; border-radius: 100% 100% 45% 45%; background: #9bad91; transform-origin: 7px 30px; }
+.cassette-flower span:nth-child(2) { transform: rotate(72deg); }
+.cassette-flower span:nth-child(3) { transform: rotate(144deg); }
+.cassette-flower span:nth-child(4) { transform: rotate(216deg); }
+.cassette-flower b { position: absolute; left: 29px; top: 27px; width: 12px; height: 12px; border-radius: 50%; background: #d2ad78; }
+.cassette-window {
+  position: relative; display: flex; align-items: center; justify-content: space-between; height: 104px; margin: 26px 0 16px;
+  padding: 0 28px; border: 7px solid #a9aa98; border-radius: 10px;
+  background: linear-gradient(180deg, #7b8878, #c1c5ae 48%, #778578);
+  box-shadow: inset 0 4px 12px rgba(30,48,38,.4), 0 1px 0 rgba(255,255,255,.7);
+}
+.cassette-reel {
+  position: relative; z-index: 1; width: 49px; height: 49px; border: 5px solid #65766a; border-radius: 50%;
+  background: repeating-conic-gradient(#d7d7c5 0deg 12deg, #77887a 13deg 25deg);
+  box-shadow: 0 0 0 4px rgba(241,238,220,.8), inset 0 0 0 5px #b9bba8;
+}
+.cassette-reel span { position: absolute; inset: 15px; border-radius: 50%; background: #52695b; }
+.is-playing .cassette-reel { animation: cassette-spin 2.8s linear infinite; }
+.cassette-tape-line { position: absolute; left: 25%; right: 25%; height: 2px; background: rgba(46,66,53,.65); }
+.cassette-label-bottom { padding-top: 5px; border-top: 1px solid rgba(43,68,49,.25); }
+.cassette-screws i { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #747a6b; box-shadow: inset 0 1px 2px rgba(0,0,0,.5); }
+.cassette-screws i:nth-child(1) { top: 14px; left: 14px; }
+.cassette-screws i:nth-child(2) { top: 14px; right: 14px; }
+.cassette-screws i:nth-child(3) { bottom: 14px; left: 14px; }
+.cassette-screws i:nth-child(4) { bottom: 14px; right: 14px; }
+.cassette-notches { display: flex; justify-content: center; gap: 10px; margin-top: 13px; }
+.cassette-notches i { width: 13px; height: 5px; border-radius: 1px; background: #818474; }
+.mixtape-console {
+  padding: clamp(22px, 3vw, 34px); border: 1px solid rgba(241,239,224,.18); border-radius: 5px;
+  background: rgba(14,35,28,.32); box-shadow: 0 20px 60px rgba(8,25,18,.14);
+  backdrop-filter: blur(12px);
+}
+.mixtape-console-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mixtape-console-heading h3 { margin: 8px 0 0; font-family: var(--font-cormorant), Georgia, serif; font-size: 31px; font-weight: 400; }
+.mixtape-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #b7c9a9; box-shadow: 0 0 14px rgba(183,201,169,.7); }
+.mixtape-track-subtitle { min-height: 17px; margin: 5px 0 22px; color: rgba(247,245,237,.52); font-size: 9px; }
+.mixtape-side-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 4px; border: 1px solid rgba(245,244,230,.15); }
+.mixtape-side-tabs button { display: flex; justify-content: space-between; padding: 10px 12px; border: 0; color: rgba(247,245,237,.48); background: transparent; font: inherit; font-size: 8px; letter-spacing: .14em; cursor: pointer; }
+.mixtape-side-tabs button.is-active { color: #263f33; background: #d9dfce; }
+.mixtape-track-list { min-height: 204px; margin: 12px 0; }
+.mixtape-track { display: grid; grid-template-columns: 25px minmax(0,1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 13px 5px; border: 0; border-bottom: 1px solid rgba(245,244,230,.1); color: #f7f5ed; text-align: left; background: transparent; cursor: pointer; }
+.mixtape-track.is-current { color: #d5e1ca; }
+.mixtape-track-index, .mixtape-track-state { color: rgba(247,245,237,.45); font-size: 7px; letter-spacing: .1em; }
+.mixtape-track-info { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.mixtape-track-info strong { overflow: hidden; font-size: 10px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.mixtape-track-info small { overflow: hidden; color: rgba(247,245,237,.46); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.mixtape-progress { margin-top: 15px; }
+.mixtape-progress-meta { display: flex; justify-content: space-between; margin-bottom: 7px; color: rgba(247,245,237,.5); font-size: 8px; font-variant-numeric: tabular-nums; }
+.mixtape-progress input { width: 100%; accent-color: #c8d6bf; cursor: pointer; }
+.mixtape-controls { display: flex; align-items: center; justify-content: center; gap: 26px; margin: 17px 0 21px; }
+.mixtape-controls button { display: grid; place-items: center; border: 0; color: #f7f5ed; background: transparent; cursor: pointer; }
+.mixtape-skip { width: 34px; height: 34px; font-size: 23px; }
+.mixtape-play { width: 52px; height: 52px; border: 1px solid rgba(239,241,222,.55) !important; border-radius: 50%; font-size: 17px; }
+.mixtape-play:disabled { opacity: .35; cursor: not-allowed; }
+.mixtape-add-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 17px; border-top: 1px solid rgba(245,244,230,.14); }
+.mixtape-add-button { padding: 10px 12px; border: 1px solid rgba(245,244,230,.35); color: #e7eadc; background: transparent; font-size: 8px; letter-spacing: .12em; cursor: pointer; }
+.mixtape-add-row > span { color: rgba(247,245,237,.42); font-size: 7px; letter-spacing: .08em; }
+.mixtape-local-note { margin: 12px 0 0; color: rgba(247,245,237,.4); font-size: 8px; line-height: 1.6; }
+.mixtape-note { max-width: 580px; margin: 82px auto 0; text-align: center; }
+.mixtape-note-mark { display: block; height: 35px; color: #b8c8ae; font-family: var(--font-cormorant), Georgia, serif; font-size: 64px; line-height: 1; }
+.mixtape-note p { margin: 14px 0; font-family: var(--font-cormorant), Georgia, serif; font-size: clamp(24px, 3vw, 34px); font-style: italic; line-height: 1.25; }
+.mixtape-note > span:last-child { color: rgba(247,245,237,.45); font-size: 7px; letter-spacing: .2em; }
+@keyframes cassette-spin { to { transform: rotate(360deg); } }
+@media (max-width: 820px) {
+  .mixtape-layout { grid-template-columns: 1fr; gap: 45px; }
+  .cassette-player { max-width: 560px; }
+  .mixtape-console { width: min(560px, 100%); margin: 0 auto; }
+}
+@media (max-width: 520px) {
+  .mixtape-intro { margin-bottom: 45px; }
+  .cassette-label { min-height: 245px; padding: 17px; }
+  .cassette-window { height: 84px; margin-top: 18px; }
+  .cassette-reel { width: 41px; height: 41px; }
+  .cassette-reel span { inset: 12px; }
+  .cassette-flower { top: 45px; right: 23px; transform: scale(.82); }
+  .mixtape-console { padding: 20px 16px; }
+  .mixtape-track { grid-template-columns: 21px minmax(0,1fr) auto; gap: 7px; }
+  .mixtape-track-state { font-size: 6px; }
+  .mixtape-add-row { align-items: flex-start; flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-playing .cassette-reel { animation: none; }
+}
