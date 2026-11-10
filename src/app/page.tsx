@@ -4,6 +4,7 @@ import { CinematicIntro } from "@/components/cinematic-intro";
 import { StoryMemories } from "@/components/story-memories";
 import { LetterExperience } from "@/components/letter-experience";
 import { OceanExperience } from "@/components/ocean-experience";
+import { SecretReveal } from "@/components/secret-reveal";
 import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
@@ -44,6 +45,7 @@ export default function HomePage() {
 
       <LetterExperience />
       <OceanExperience />
+      <SecretReveal />
 
       <footer className="site-footer" id="final">
         <span>{siteContent.footerNote}</span>
