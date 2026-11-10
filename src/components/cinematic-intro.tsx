@@ -99,7 +99,7 @@ export function CinematicIntro() {
           animate={reduceMotion ? undefined : { scaleY: [0.55, 1, 0.55], opacity: [0.45, 1, 0.45] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <span>01 — 08</span>
+        <span>01 — 09</span>
       </motion.a>
     </section>
   );
