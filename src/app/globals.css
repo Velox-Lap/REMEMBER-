@@ -396,7 +396,7 @@ a:focus-visible, button:focus-visible {
   box-shadow: 0 3px 12px rgba(50,65,48,.18); font-family: var(--font-cormorant), Georgia, serif; font-size: 17px;
 }
 .letter-paper {
-  position: absolute; z-index: 2; top: 30px; width: min(450px, 76vw); min-height: 450px;
+  position: absolute; z-index: 2; top: 225px; width: min(450px, 76vw); min-height: 450px;
   padding: 18px; background: #fffdf6; box-shadow: 0 12px 34px rgba(48,61,48,.12);
   transform-origin: bottom center;
 }
@@ -425,7 +425,7 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 600px) {
   .letter-stage { min-height: 590px; margin-top: 42px; }
   .envelope { top: 245px; height: min(58vw, 265px); }
-  .letter-paper { top: 45px; width: min(390px, 82vw); min-height: 420px; padding: 12px; }
+  .letter-paper { top: 235px; width: min(390px, 82vw); min-height: 420px; padding: 12px; }
   .letter-paper-inner { min-height: 396px; padding: 27px 23px 22px; }
   .letter-body p { font-size: 9px; line-height: 1.85; }
   .letter-open-button { top: 535px; }
