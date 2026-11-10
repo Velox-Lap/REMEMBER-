@@ -3,6 +3,7 @@ import { SectionHeading } from "@/components/section-heading";
 import { CinematicIntro } from "@/components/cinematic-intro";
 import { StoryMemories } from "@/components/story-memories";
 import { LetterExperience } from "@/components/letter-experience";
+import { OceanExperience } from "@/components/ocean-experience";
 import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
@@ -42,16 +43,7 @@ export default function HomePage() {
       </section>
 
       <LetterExperience />
-
-      <section className="ocean-teaser" id="ocean">
-        <div className="ocean-teaser-content">
-          <span className="eyebrow">ACT II — THE OCEAN</span>
-          <h2>Some things stay,<br /><em>like the sea.</em></h2>
-          <p>A horizon is only the beginning of another story.</p>
-        </div>
-        <div className="ocean-sun" aria-hidden="true" />
-        <div className="ocean-horizon" aria-hidden="true" />
-      </section>
+      <OceanExperience />
 
       <footer className="site-footer" id="final">
         <span>{siteContent.footerNote}</span>
