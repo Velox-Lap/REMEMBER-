@@ -19,15 +19,15 @@ function MemoryArtwork({ tone }: { tone: MemoryItem["tone"] }) {
 export function StoryMemories() {
   const [selectedMemory, setSelectedMemory] = useState<MemoryItem | null>(null);
   const [filterTone, setFilterTone] = useState<"all" | MemoryItem["tone"]>("all");
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const filteredMemoryItems = filterTone === "all"
     ? memoryItems
     : memoryItems.filter((memory) => memory.tone === filterTone);
   const selectedIndex = selectedMemory
     ? memoryItems.findIndex((memory) => memory.id === selectedMemory.id)
     : -1;
-  const reduceMotion = useReducedMotion();
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!selectedMemory) return;
@@ -44,8 +44,14 @@ export function StoryMemories() {
         setSelectedMemory(null);
         return;
       }
-
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        const nextIndex = (selectedIndex + direction + memoryItems.length) % memoryItems.length;
+        setSelectedMemory(memoryItems[nextIndex]);
+        return;
+      }
       if (event.key !== "Tab") return;
+
       const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
         'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
       );
@@ -73,6 +79,19 @@ export function StoryMemories() {
       previouslyFocused?.focus();
     };
   }, [selectedMemory, selectedIndex]);
+
+  const moveMemory = (direction: -1 | 1) => {
+    const nextIndex = (selectedIndex + direction + memoryItems.length) % memoryItems.length;
+    setSelectedMemory(memoryItems[nextIndex]);
+  };
+
+  const filters: { value: "all" | MemoryItem["tone"]; label: string }[] = [
+    { value: "all", label: "ALL FRAMES" },
+    { value: "sage", label: "SAGE" },
+    { value: "sand", label: "SAND" },
+    { value: "blue", label: "OCEAN" },
+    { value: "moss", label: "MOSS" },
+  ];
 
   return (
     <>
@@ -118,8 +137,22 @@ export function StoryMemories() {
             <p>Six little frames, ready for photographs and the stories behind them.</p>
           </div>
 
-          <div className="memory-grid">
-            {memoryItems.map((memory, index) => (
+          <div className="memory-filters" role="group" aria-label="Filter memories by color theme">
+            {filters.map((filter) => (
+              <button
+                className="memory-filter"
+                key={filter.value}
+                type="button"
+                aria-pressed={filterTone === filter.value}
+                onClick={() => setFilterTone(filter.value)}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="memory-grid" aria-live="polite">
+            {filteredMemoryItems.map((memory, index) => (
               <motion.button
                 className={`memory-card memory-card--${index % 3}`}
                 key={memory.id}
@@ -139,7 +172,9 @@ export function StoryMemories() {
               </motion.button>
             ))}
           </div>
-          <p className="memories-footnote">Replace each illustrated frame with a photograph from your own collection.</p>
+          <p className="memories-footnote">
+            Showing {filteredMemoryItems.length} of {memoryItems.length} frames. Replace each illustrated frame with a photograph from your own collection.
+          </p>
         </div>
       </section>
 
@@ -175,6 +210,12 @@ export function StoryMemories() {
                 <h3 id="lightbox-title">{selectedMemory.title}</h3>
                 <p>{selectedMemory.caption}</p>
                 <span className="handwritten">A moment worth keeping.</span>
+                <div className="lightbox-navigation">
+                  <button type="button" onClick={() => moveMemory(-1)}>← PREVIOUS</button>
+                  <span>{String(selectedIndex + 1).padStart(2, "0")} / {String(memoryItems.length).padStart(2, "0")}</span>
+                  <button type="button" onClick={() => moveMemory(1)}>NEXT →</button>
+                </div>
+                <span className="lightbox-keyboard-hint">USE ← → TO EXPLORE · ESC TO CLOSE</span>
               </div>
             </motion.div>
           </motion.div>
