@@ -10,9 +10,10 @@ const chapters = [
   { id: "story", label: "Story", number: "03" },
   { id: "memories", label: "Memories", number: "04" },
   { id: "letter", label: "Letter", number: "05" },
-  { id: "ocean", label: "Ocean", number: "06" },
-  { id: "secret", label: "Secret", number: "07" },
-  { id: "final", label: "Finale", number: "08" },
+  { id: "mixtape", label: "Mixtape", number: "06" },
+  { id: "ocean", label: "Ocean", number: "07" },
+  { id: "secret", label: "Secret", number: "08" },
+  { id: "final", label: "Finale", number: "09" },
 ] as const;
 
 export function ExperienceNavigation() {
