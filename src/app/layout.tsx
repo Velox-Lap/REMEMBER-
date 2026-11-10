@@ -38,7 +38,6 @@ export const metadata: Metadata = {
   title: "PROJECT 29.12 — A Little World, Just for You",
   description:
     "A private little universe told through nature, the ocean, and meaningful memories.",
-  metadataBase: new URL("https://project-29-12.example"),
   robots: { index: false, follow: false },
 };
 
