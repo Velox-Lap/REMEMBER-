@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { memoryItems, storyMoments, type MemoryItem } from "@/content/memories";
 
 function MemoryArtwork({ tone }: { tone: MemoryItem["tone"] }) {
@@ -18,19 +18,58 @@ function MemoryArtwork({ tone }: { tone: MemoryItem["tone"] }) {
 
 export function StoryMemories() {
   const [selectedMemory, setSelectedMemory] = useState<MemoryItem | null>(null);
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!selectedMemory) return;
+
+    const previouslyFocused = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedMemory(null);
+      if (event.key === "Escape") {
+        setSelectedMemory(null);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable?.length) {
+        event.preventDefault();
+        dialogRef.current?.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus();
+    };
   }, [selectedMemory]);
 
   return (
     <>
-      <section className="story-section" aria-labelledby="story-title">
+      <section className="story-section" id="story" aria-labelledby="story-title">
         <div className="story-shell">
           <div className="story-heading">
             <div>
@@ -46,10 +85,10 @@ export function StoryMemories() {
               <motion.article
                 className={`timeline-entry timeline-entry--${index % 2 === 0 ? "left" : "right"}`}
                 key={moment.chapter}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.65, delay: index * 0.06 }}
+                transition={{ duration: reduceMotion ? 0 : 0.65, delay: reduceMotion ? 0 : index * 0.06 }}
               >
                 <span className="timeline-marker" aria-hidden="true" />
                 <div className="timeline-card">
@@ -64,7 +103,7 @@ export function StoryMemories() {
         </div>
       </section>
 
-      <section className="memories-section" aria-labelledby="memories-title">
+      <section className="memories-section" id="memories" aria-labelledby="memories-title">
         <div className="memories-shell">
           <div className="memories-heading">
             <span className="eyebrow">A SCRAPBOOK OF US</span>
@@ -79,8 +118,8 @@ export function StoryMemories() {
                 key={memory.id}
                 type="button"
                 onClick={() => setSelectedMemory(memory)}
-                whileHover={{ y: -7, rotate: index % 2 === 0 ? -1 : 1 }}
-                whileTap={{ scale: 0.985 }}
+                whileHover={reduceMotion ? undefined : { y: -7, rotate: index % 2 === 0 ? -1 : 1 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.985 }}
                 aria-label={`Open memory: ${memory.title}`}
               >
                 <MemoryArtwork tone={memory.tone} />
@@ -105,22 +144,24 @@ export function StoryMemories() {
             onMouseDown={(event) => {
               if (event.target === event.currentTarget) setSelectedMemory(null);
             }}
-            initial={{ opacity: 0 }}
+            initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
+            exit={reduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22 }}
           >
             <motion.div
               className="lightbox-panel"
+              ref={dialogRef}
+              tabIndex={-1}
               role="dialog"
               aria-modal="true"
               aria-labelledby="lightbox-title"
-              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 18, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              transition={{ duration: 0.25 }}
+              exit={reduceMotion ? undefined : { opacity: 0, y: 10, scale: 0.98 }}
+              transition={{ duration: reduceMotion ? 0 : 0.25 }}
             >
-              <button className="lightbox-close" type="button" onClick={() => setSelectedMemory(null)} aria-label="Close memory viewer">×</button>
+              <button ref={closeButtonRef} className="lightbox-close" type="button" onClick={() => setSelectedMemory(null)} aria-label="Close memory viewer">×</button>
               <MemoryArtwork tone={selectedMemory.tone} />
               <div className="lightbox-copy">
                 <span className="eyebrow">{selectedMemory.date}</span>
