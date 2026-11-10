@@ -18,6 +18,13 @@ function MemoryArtwork({ tone }: { tone: MemoryItem["tone"] }) {
 
 export function StoryMemories() {
   const [selectedMemory, setSelectedMemory] = useState<MemoryItem | null>(null);
+  const [filterTone, setFilterTone] = useState<"all" | MemoryItem["tone"]>("all");
+  const filteredMemoryItems = filterTone === "all"
+    ? memoryItems
+    : memoryItems.filter((memory) => memory.tone === filterTone);
+  const selectedIndex = selectedMemory
+    ? memoryItems.findIndex((memory) => memory.id === selectedMemory.id)
+    : -1;
   const reduceMotion = useReducedMotion();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -65,7 +72,7 @@ export function StoryMemories() {
       document.body.style.overflow = previousOverflow;
       previouslyFocused?.focus();
     };
-  }, [selectedMemory]);
+  }, [selectedMemory, selectedIndex]);
 
   return (
     <>
