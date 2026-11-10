@@ -1,12 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { letterContent } from "@/content/letter";
 
 export function LetterExperience() {
-  const [isOpen, setIsOpen] = useState(false);\n  const [copyLabel, setCopyLabel] = useState("COPY LETTER");
-  const reduceMotion = useReducedMotion();\n\n  const copyLetter = async () => {\n    const text = [letterContent.recipient, ...letterContent.paragraphs, letterContent.closing, letterContent.signature].join("\\n\\n");\n    try {\n      await navigator.clipboard.writeText(text);\n      setCopyLabel("COPIED");\n    } catch {\n      setCopyLabel("COPY UNAVAILABLE");\n    }\n  };
+  const [isOpen, setIsOpen] = useState(false);
+  const [copyLabel, setCopyLabel] = useState("COPY LETTER");
+  const reduceMotion = useReducedMotion();
+
+  const copyLetter = async () => {
+    const text = [letterContent.recipient, ...letterContent.paragraphs, letterContent.closing, letterContent.signature].join("\n\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyLabel("COPIED");
+    } catch {
+      setCopyLabel("COPY UNAVAILABLE");
+    }
+  };
 
   return (
     <section className="letter-section" id="letter" aria-labelledby="letter-title">
@@ -80,6 +91,11 @@ export function LetterExperience() {
           <p className="letter-hint" aria-live="polite">
             {isOpen ? "Take your time with every word." : "A small note, waiting to be opened."}
           </p>
+          {isOpen && (
+            <button className="letter-copy-button" type="button" onClick={copyLetter}>
+              <span aria-hidden="true">↗</span> {copyLabel}
+            </button>
+          )}
         </div>
       </div>
     </section>
