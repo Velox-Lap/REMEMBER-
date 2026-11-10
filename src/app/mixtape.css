@@ -141,3 +141,5 @@
 @media (prefers-reduced-motion: reduce) {
   .is-playing .cassette-reel { animation: none; }
 }
+
+.mixtape-empty-side { margin: 0; padding: 28px 8px; color: rgba(247,245,237,.46); font-family: var(--font-cormorant), Georgia, serif; font-size: 21px; font-style: italic; text-align: center; }
