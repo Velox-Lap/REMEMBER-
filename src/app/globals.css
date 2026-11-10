@@ -128,7 +128,7 @@ a:focus-visible, button:focus-visible {
 .section-heading .eyebrow { color:#758176; margin-bottom:18px; }
 .section-heading h2 { margin:0; font-family:var(--font-cormorant),Georgia,serif; font-weight:400; font-size:clamp(54px,7vw,94px); letter-spacing:-.045em; line-height:.95; }
 .section-heading p { max-width:440px; margin:22px 0 0; color:#69766d; font-size:13px; line-height:1.85; }
-.acts-side-note { max-width:205px; margin:0 0 5px; font-family:var(--font-editorial),Georgia,serif; font-size:16px; line-height:1.5; color:#536458; }
+.acts-side-note { max-width:205px; margin:0 0 5px; font-family:var(--font-playfair),Georgia,serif; font-size:16px; line-height:1.5; color:#536458; }
 .acts-side-note span { display:block; color:#89958a; font-size:13px; font-style:italic; }
 .acts-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
 .act-card { min-height:410px; position:relative; overflow:hidden; isolation:isolate; padding:25px; display:flex; flex-direction:column; justify-content:space-between; color:#f8f6ef; }
@@ -259,7 +259,7 @@ a:focus-visible, button:focus-visible {
   font-size: clamp(58px, 7.5vw, 96px); font-weight: 400; line-height: .88; letter-spacing: -.045em;
 }
 .story-heading h2 em, .memories-heading h2 em { color: #829781; font-weight: 400; }
-.story-heading > p { max-width: 250px; margin: 0 0 5px; color: #758076; font-family: var(--font-editorial), Georgia, serif; font-size: 17px; line-height: 1.6; }
+.story-heading > p { max-width: 250px; margin: 0 0 5px; color: #758076; font-family: var(--font-playfair), Georgia, serif; font-size: 17px; line-height: 1.6; }
 .story-timeline { position: relative; display: grid; grid-template-columns: 1fr 1fr; column-gap: 110px; row-gap: 54px; }
 .timeline-rail { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(transparent, #b8c3b2 8%, #b8c3b2 92%, transparent); transform: translateX(-50%); }
 .timeline-entry { position: relative; min-height: 170px; }
@@ -482,7 +482,7 @@ a:focus-visible, button:focus-visible {
 .ocean-hero-copy h2 em { color: #5f8c99; font-weight: 400; }
 .ocean-hero-copy > p {
   max-width: 410px; margin: 25px auto 0; color: #527985;
-  font-family: var(--font-editorial), Georgia, serif; font-size: 16px; line-height: 1.65;
+  font-family: var(--font-playfair), Georgia, serif; font-size: 16px; line-height: 1.65;
 }
 .ocean-discover {
   display: inline-flex; align-items: center; gap: 16px; margin-top: 34px;
@@ -571,7 +571,7 @@ a:focus-visible, button:focus-visible {
 .tide-note-copy p { margin: 0; color: #71898a; font-size: 10px; line-height: 1.7; }
 .ocean-closing {
   margin: 70px auto 0; color: #64858a; text-align: center;
-  font-family: var(--font-editorial), Georgia, serif; font-size: clamp(18px, 2.5vw, 24px); font-style: italic;
+  font-family: var(--font-playfair), Georgia, serif; font-size: clamp(18px, 2.5vw, 24px); font-style: italic;
 }
 @media (max-width: 760px) {
   .ocean-sky { height: 610px; }
