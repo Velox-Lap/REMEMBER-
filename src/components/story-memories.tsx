@@ -73,7 +73,7 @@ export function StoryMemories() {
         <div className="story-shell">
           <div className="story-heading">
             <div>
-              <span className="eyebrow">CHAPTER 02 — THE STORY</span>
+              <span className="eyebrow">CHAPTER 03 — THE STORY</span>
               <h2 id="story-title">Little moments,<br /><em>along the way.</em></h2>
             </div>
             <p>Not every important moment is loud. Some simply find a place to stay.</p>
@@ -106,7 +106,7 @@ export function StoryMemories() {
       <section className="memories-section" id="memories" aria-labelledby="memories-title">
         <div className="memories-shell">
           <div className="memories-heading">
-            <span className="eyebrow">A SCRAPBOOK OF US</span>
+            <span className="eyebrow">CHAPTER 04 — A SCRAPBOOK OF US</span>
             <h2 id="memories-title">Collected <em>memories.</em></h2>
             <p>Six little frames, ready for photographs and the stories behind them.</p>
           </div>
