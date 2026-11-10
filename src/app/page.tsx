@@ -1,58 +1,12 @@
 import { ActCard } from "@/components/act-card";
 import { SectionHeading } from "@/components/section-heading";
-import { SiteHeader } from "@/components/site-header";
+import { CinematicIntro } from "@/components/cinematic-intro";
 import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
   return (
     <main>
-      <section className="intro-scene" id="intro" aria-labelledby="intro-title">
-        <div className="intro-grain" aria-hidden="true" />
-        <div className="intro-glow intro-glow--one" aria-hidden="true" />
-        <div className="intro-glow intro-glow--two" aria-hidden="true" />
-        <SiteHeader />
-
-        <div className="hero-layout">
-          <div className="hero-copy">
-            <p className="hero-overline">
-              <span className="overline-line" />
-              AN EXPERIENCE MADE WITH CARE
-            </p>
-            <h1 id="intro-title">
-              A Little World,
-              <br />
-              <em>Just for You.</em>
-            </h1>
-            <p className="hero-description">
-              {siteContent.openingSubtitle}
-            </p>
-            <a className="enter-link" href="#garden">
-              <span className="enter-link-icon" aria-hidden="true">↘</span>
-              <span>{siteContent.enterLabel}</span>
-            </a>
-          </div>
-
-          <div className="hero-art" aria-label="Abstract botanical illustration">
-            <div className="hero-art-halo" />
-            <div className="hero-art-stem hero-art-stem--one" />
-            <div className="hero-art-stem hero-art-stem--two" />
-            <div className="hero-art-leaf hero-art-leaf--one" />
-            <div className="hero-art-leaf hero-art-leaf--two" />
-            <div className="hero-art-leaf hero-art-leaf--three" />
-            <div className="hero-art-flower">
-              <span /><span /><span /><span /><span /><span />
-              <i />
-            </div>
-            <span className="hero-art-caption">A QUIET PLACE TO BEGIN</span>
-          </div>
-        </div>
-
-        <div className="hero-bottom">
-          <span>SCROLL TO EXPLORE</span>
-          <span className="scroll-indicator" aria-hidden="true" />
-          <span>01 — 08</span>
-        </div>
-      </section>
+      <CinematicIntro />
 
       <section className="acts-section section-wrap" id="garden">
         <div className="acts-intro">
@@ -95,7 +49,7 @@ export default function HomePage() {
 
       <footer className="site-footer" id="final">
         <span>{siteContent.footerNote}</span>
-        <span> A JOURNEY THROUGH OUR LITTLE UNIVERSE </span>
+        <span>A JOURNEY THROUGH OUR LITTLE UNIVERSE</span>
       </footer>
     </main>
   );
