@@ -205,3 +205,41 @@ a:focus-visible, button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }
+
+
+/* Phase 03 — cinematic intro atmosphere */
+.intro-atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.atmosphere-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(225, 231, 205, .78);
+  box-shadow: 0 0 16px 3px rgba(225, 231, 205, .2);
+  animation: particle-float 9s ease-in-out infinite;
+}
+.atmosphere-particle--one { left: 13%; top: 28%; animation-delay: -2s; }
+.atmosphere-particle--two { left: 58%; top: 18%; width: 2px; height: 2px; animation-delay: -5s; }
+.atmosphere-particle--three { right: 12%; top: 68%; animation-delay: -7s; }
+.atmosphere-particle--four { left: 43%; bottom: 14%; width: 2px; height: 2px; animation-delay: -3s; }
+@keyframes particle-float {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: .25; }
+  50% { transform: translate3d(8px, -18px, 0); opacity: .9; }
+}
+.hero-copy, .hero-art { will-change: opacity, transform; }
+.hero-bottom { text-decoration: none; cursor: pointer; }
+.hero-art-halo { will-change: transform; }
+@media (max-width: 680px) {
+  .intro-atmosphere { opacity: .65; }
+  .hero-art { flex: 0 0 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere-particle { animation: none !important; }
+  .hero-copy, .hero-art, .hero-art-halo { will-change: auto; }
+}
