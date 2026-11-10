@@ -47,7 +47,8 @@ export function MixtapeExperience() {
     setPlaying(false);
     setCurrentTime(0);
     setDuration(0);
-    audio.src = activeTrack?.src ?? "";
+    if (activeTrack?.src) audio.src = activeTrack.src;
+    else audio.removeAttribute("src");
     audio.load();
   }, [activeTrack?.id, activeTrack?.src]);
 
