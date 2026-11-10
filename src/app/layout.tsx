@@ -6,6 +6,7 @@ import {
   Playfair_Display,
 } from "next/font/google";
 import "./globals.css";
+import "./enhancements.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
