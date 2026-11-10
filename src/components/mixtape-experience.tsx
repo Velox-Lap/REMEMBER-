@@ -51,12 +51,6 @@ export function MixtapeExperience() {
     audio.load();
   }, [activeTrack?.id, activeTrack?.src]);
 
-  useEffect(() => () => {
-    tracks.forEach((track) => {
-      if (track.src?.startsWith("blob:")) URL.revokeObjectURL(track.src);
-    });
-  }, [tracks]);
-
   const chooseSide = (nextSide: "A" | "B") => {
     setSide(nextSide);
     const nextTrack = tracks.find((track) => track.side === nextSide);
@@ -67,34 +61,17 @@ export function MixtapeExperience() {
     if (!files?.length) return;
     const audioFiles = Array.from(files).filter((file) => file.type.startsWith("audio/"));
     if (!audioFiles.length) return;
-    setTracks((current) => {
-      const additions = audioFiles.map((file, index) => {
-        const sideForTrack: "A" | "B" = (current.length + index) % 2 === 0 ? "A" : "B";
-        return {
-          id: `local-${Date.now()}-${index}`,
-          title: file.name.replace(/\\.[^/.]+$/, ""),
-          fileName: file.name,
-          src: URL.createObjectURL(file),
-          side: sideForTrack,
-        };
-      });
-      const next = [...current.filter((track) => track.src), ...additions];
-      return next;
-    });
-    const first = audioFiles[0];
-    const nextId = `local-${Date.now()}-0`;
-    const nextSide: "A" | "B" = (tracks.length % 2 === 0) ? "A" : "B";
-    setTracks((current) => {
-      const created = current.find((track) => track.fileName === first.name && track.src);
-      if (created) {
-        setSide(created.side);
-        setActiveId(created.id);
-      } else {
-        setSide(nextSide);
-        setActiveId(nextId);
-      }
-      return current;
-    });
+    const additions: TapeTrack[] = audioFiles.map((file, index) => ({
+      id: `local-${Date.now()}-${index}`,
+      title: file.name.replace(/\\.[^/.]+$/, ""),
+      fileName: file.name,
+      src: URL.createObjectURL(file),
+      side: (tracks.length + index) % 2 === 0 ? "A" : "B",
+    }));
+    setTracks((current) => [...current, ...additions]);
+    setSide(additions[0].side);
+    setActiveId(additions[0].id);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const togglePlayback = async () => {
