@@ -5,11 +5,14 @@ import { StoryMemories } from "@/components/story-memories";
 import { LetterExperience } from "@/components/letter-experience";
 import { OceanExperience } from "@/components/ocean-experience";
 import { SecretReveal } from "@/components/secret-reveal";
+import { ExperienceNavigation } from "@/components/experience-navigation";
 import { acts, siteContent } from "@/content/site";
 
 export default function HomePage() {
   return (
-    <main id="main-content">
+    <>
+      <ExperienceNavigation />
+      <main id="main-content">
       <CinematicIntro />
 
       <section className="acts-section section-wrap" id="garden">
@@ -51,6 +54,7 @@ export default function HomePage() {
         <span>{siteContent.footerNote}</span>
         <span>A JOURNEY THROUGH OUR LITTLE UNIVERSE</span>
       </footer>
-    </main>
+      </main>
+    </>
   );
 }
