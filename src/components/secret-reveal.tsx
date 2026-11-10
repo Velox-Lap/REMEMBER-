@@ -80,7 +80,7 @@ export function SecretReveal() {
 
     <section className="final-chapter" id="final" aria-labelledby="final-chapter-title">
       <div className="final-chapter-shell">
-        <span className="final-chapter-eyebrow" id="final-chapter-title">CHAPTER 08 — THE FINALE</span>
+        <span className="final-chapter-eyebrow" id="final-chapter-title">CHAPTER 09 — THE FINALE</span>
         <div className="final-reveal-wrap">
           {!finalOpen ? (
             <button
