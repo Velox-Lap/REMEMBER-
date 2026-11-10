@@ -29,7 +29,7 @@ export function SecretReveal() {
           <p>{secretContent.description}</p>
         </header>
 
-        <div className="secret-garden" aria-label="Interactive secret garden">
+        <div className="secret-garden" role="group" aria-label="Interactive secret garden">
           <div className="secret-garden-orbit secret-garden-orbit--one" />
           <div className="secret-garden-orbit secret-garden-orbit--two" />
           {secretContent.flowers.map((flower, index) => {
