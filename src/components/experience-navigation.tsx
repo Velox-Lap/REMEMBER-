@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUp, Compass } from "lucide-react";
 
@@ -22,6 +22,8 @@ export function ExperienceNavigation() {
   const [transitioning, setTransitioning] = useState(false);
   const [targetLabel, setTargetLabel] = useState("");
   const reduceMotion = useReducedMotion();
+  const transitionTimerRef = useRef<number | null>(null);
+  const scrollTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const sections = chapters
@@ -46,21 +48,33 @@ export function ExperienceNavigation() {
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", onScroll);
+      if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
+      if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
     };
   }, []);
 
   const navigateTo = (id: string, label: string) => {
     const target = document.getElementById(id);
     if (!target) return;
+
+    if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
+    if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
     setTargetLabel(label);
+    setActiveChapter(id);
+
     if (reduceMotion) {
       target.scrollIntoView({ behavior: "auto", block: "start" });
       return;
     }
+
     setTransitioning(true);
-    window.setTimeout(() => {
+    transitionTimerRef.current = window.setTimeout(() => {
       target.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.setTimeout(() => setTransitioning(false), 720);
+      scrollTimerRef.current = window.setTimeout(() => {
+        setTransitioning(false);
+        transitionTimerRef.current = null;
+        scrollTimerRef.current = null;
+      }, 720);
     }, 260);
   };
 
@@ -70,11 +84,11 @@ export function ExperienceNavigation() {
         <span className="chapter-rail-label">JOURNEY</span>
         {chapters.map((chapter) => (
           <button
-            className={`chapter-rail-link${activeChapter === chapter.id ? " is-active" : ""}`}
+            className={"chapter-rail-link" + (activeChapter === chapter.id ? " is-active" : "")}
             key={chapter.id}
             type="button"
             onClick={() => navigateTo(chapter.id, chapter.label)}
-            aria-label={`Go to chapter ${chapter.number}: ${chapter.label}`}
+            aria-label={"Go to chapter " + chapter.number + ": " + chapter.label}
             aria-current={activeChapter === chapter.id ? "location" : undefined}
           >
             <span className="chapter-rail-number">{chapter.number}</span>
