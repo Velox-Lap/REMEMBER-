@@ -724,3 +724,8 @@ a:focus-visible, button:focus-visible {
   .secret-flower-button, .secret-flower-illustration, .secret-progress-track span { transition: none; }
   .final-reveal-card { animation: none; }
 }
+
+.final-reveal-button:disabled {
+  opacity: .42; cursor: not-allowed; border-color: rgba(213,225,199,.18);
+}
+.final-reveal-button:disabled:hover { background: transparent; border-color: rgba(213,225,199,.18); }
