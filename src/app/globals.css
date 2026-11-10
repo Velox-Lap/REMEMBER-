@@ -243,3 +243,103 @@ a:focus-visible, button:focus-visible {
   .atmosphere-particle { animation: none !important; }
   .hero-copy, .hero-art, .hero-art-halo { will-change: auto; }
 }
+
+
+/* Phase 04 — story timeline and memory scrapbook */
+.story-section {
+  padding: clamp(100px, 12vw, 170px) var(--page-gutter);
+  background: #f1efe7;
+  overflow: hidden;
+}
+.story-shell, .memories-shell { width: min(1120px, 100%); margin: 0 auto; }
+.story-heading { display: flex; justify-content: space-between; align-items: end; gap: 36px; margin-bottom: 90px; }
+.story-heading .eyebrow, .memories-heading .eyebrow { color: #778477; }
+.story-heading h2, .memories-heading h2 {
+  margin: 22px 0 0; color: #2b4639; font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(58px, 7.5vw, 96px); font-weight: 400; line-height: .88; letter-spacing: -.045em;
+}
+.story-heading h2 em, .memories-heading h2 em { color: #829781; font-weight: 400; }
+.story-heading > p { max-width: 250px; margin: 0 0 5px; color: #758076; font-family: var(--font-editorial), Georgia, serif; font-size: 17px; line-height: 1.6; }
+.story-timeline { position: relative; display: grid; grid-template-columns: 1fr 1fr; column-gap: 110px; row-gap: 54px; }
+.timeline-rail { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: linear-gradient(transparent, #b8c3b2 8%, #b8c3b2 92%, transparent); transform: translateX(-50%); }
+.timeline-entry { position: relative; min-height: 170px; }
+.timeline-entry--left { grid-column: 1; text-align: right; }
+.timeline-entry--right { grid-column: 2; margin-top: 100px; }
+.timeline-marker { position: absolute; top: 24px; width: 11px; height: 11px; border-radius: 50%; background: #789078; border: 3px solid #f1efe7; box-shadow: 0 0 0 1px #9dad9d; }
+.timeline-entry--left .timeline-marker { right: -61px; }
+.timeline-entry--right .timeline-marker { left: -61px; }
+.timeline-card { padding: 25px 28px 27px; border: 1px solid rgba(65, 91, 72, .16); background: rgba(255,255,255,.42); }
+.timeline-chapter, .timeline-date { display: block; font-size: 8px; letter-spacing: .17em; color: #829082; }
+.timeline-date { margin-top: 11px; color: #9b9d8e; }
+.timeline-card h3 { margin: 15px 0 9px; color: #304a3b; font-family: var(--font-cormorant), Georgia, serif; font-size: 37px; font-weight: 400; }
+.timeline-card p { max-width: 340px; margin: 0; color: #6f7a70; font-size: 11px; line-height: 1.9; }
+.timeline-entry--left .timeline-card p { margin-left: auto; }
+
+.memories-section { padding: clamp(100px, 12vw, 165px) var(--page-gutter); background: #e6dfd1; }
+.memories-heading { text-align: center; margin-bottom: 64px; }
+.memories-heading .eyebrow { justify-content: center; }
+.memories-heading h2 { margin-top: 20px; }
+.memories-heading > p { margin: 20px auto 0; color: #737d70; font-size: 12px; line-height: 1.8; }
+.memory-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; align-items: start; }
+.memory-card {
+  position: relative; display: block; width: 100%; padding: 11px 11px 17px; border: 0;
+  background: #fbfaf5; color: #34483b; text-align: left; cursor: pointer;
+  box-shadow: 0 12px 30px rgba(48, 58, 46, .09); transition: box-shadow 220ms ease;
+}
+.memory-card--1 { margin-top: 35px; }
+.memory-card--2 { margin-top: 12px; }
+.memory-card:hover { box-shadow: 0 20px 38px rgba(48, 58, 46, .15); }
+.memory-art {
+  position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1.12;
+  overflow: hidden; isolation: isolate; background: #9eaf99;
+}
+.memory-art--sage { background: linear-gradient(145deg, #c7d0bd, #728d78); }
+.memory-art--sand { background: linear-gradient(145deg, #e8d9bd, #a9a184); }
+.memory-art--blue { background: linear-gradient(145deg, #b8d3d6, #668b91); }
+.memory-art--moss { background: linear-gradient(145deg, #aab69b, #556b58); }
+.memory-art::before { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255,255,255,.42); }
+.memory-art-orbit { position: absolute; width: 62%; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; }
+.memory-art-shape { position: absolute; width: 33%; height: 50%; border: 1px solid rgba(255,255,255,.58); border-radius: 90% 0 90% 0; background: rgba(248,246,239,.12); }
+.memory-art-shape--one { transform: translate(-32%, 0) rotate(-28deg); }
+.memory-art-shape--two { transform: translate(32%, 0) rotate(152deg); }
+.memory-art-stamp { position: absolute; top: 24px; right: 25px; color: rgba(255,255,255,.7); font-family: var(--font-cormorant), Georgia, serif; font-size: 20px; letter-spacing: .1em; }
+.memory-art-placeholder { position: absolute; bottom: 24px; color: rgba(255,255,255,.8); font-size: 7px; letter-spacing: .2em; }
+.memory-card-copy { display: block; padding: 17px 8px 10px; }
+.memory-card-date { display: block; color: #92988b; font-size: 8px; letter-spacing: .16em; }
+.memory-card-title { display: block; margin-top: 8px; font-family: var(--font-cormorant), Georgia, serif; font-size: 28px; line-height: 1; }
+.memory-card-caption { display: block; margin-top: 8px; color: #7d8579; font-size: 10px; line-height: 1.65; }
+.memory-card-open { display: block; padding: 0 8px; color: #849181; font-size: 7px; letter-spacing: .16em; }
+.memories-footnote { margin: 38px 0 0; color: #818779; text-align: center; font-size: 9px; letter-spacing: .05em; }
+.memory-lightbox { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 24px; background: rgba(20, 35, 29, .78); backdrop-filter: blur(8px); }
+.lightbox-panel { position: relative; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(220px, .9fr); gap: 30px; width: min(820px, 100%); padding: 28px; background: #f8f6ef; box-shadow: 0 30px 90px rgba(0,0,0,.25); }
+.lightbox-panel .memory-art { align-self: center; }
+.lightbox-close { position: absolute; z-index: 2; top: 8px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #e9e7de; color: #304a3b; font-size: 25px; line-height: 1; cursor: pointer; }
+.lightbox-copy { align-self: center; padding: 20px 10px; }
+.lightbox-copy h3 { margin: 16px 0 10px; color: #304a3b; font-family: var(--font-cormorant), Georgia, serif; font-size: 48px; font-weight: 400; line-height: .95; }
+.lightbox-copy p { color: #758076; font-size: 12px; line-height: 1.8; }
+.lightbox-copy .handwritten { display: block; margin-top: 28px; }
+
+@media (max-width: 760px) {
+  .story-heading { display: block; margin-bottom: 55px; }
+  .story-heading > p { margin-top: 25px; }
+  .story-timeline { display: block; padding-left: 28px; }
+  .timeline-rail { left: 5px; transform: none; }
+  .timeline-entry, .timeline-entry--right { margin: 0 0 24px; min-height: 0; text-align: left; }
+  .timeline-entry--left .timeline-marker, .timeline-entry--right .timeline-marker { left: -28px; right: auto; top: 22px; }
+  .timeline-entry--left .timeline-card p { margin-left: 0; }
+  .timeline-card { padding: 21px; }
+  .memory-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+  .memory-card--1, .memory-card--2 { margin-top: 0; }
+  .memory-card-title { font-size: 24px; }
+  .lightbox-panel { grid-template-columns: 1fr; gap: 10px; max-width: 470px; max-height: calc(100svh - 32px); overflow-y: auto; padding: 18px; }
+  .lightbox-panel .memory-art { max-height: 42vh; }
+  .lightbox-copy { padding: 10px 6px 6px; }
+  .lightbox-copy h3 { font-size: 40px; }
+}
+@media (max-width: 420px) {
+  .memory-grid { grid-template-columns: 1fr; gap: 18px; }
+  .memory-card { max-width: 360px; margin: 0 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .memory-card { transition: none; }
+}
