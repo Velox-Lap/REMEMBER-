@@ -115,3 +115,4 @@ html { scroll-behavior: smooth; }
   .editorial-ribbon-track, .final-reveal-card::before, .final-reveal-card::after { animation: none; }
   .timeline-card, .memory-card, .tide-note, .back-to-top { transition: none; }
 }
+\n@media (max-width: 760px) { body { padding-bottom: calc(58px + env(safe-area-inset-bottom)); } }\n@media (min-width: 761px) { body { padding-bottom: 0; } }\n
