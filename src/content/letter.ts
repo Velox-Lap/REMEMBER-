@@ -1,5 +1,5 @@
 export const letterContent = {
-  eyebrow: "A LETTER, KEPT FOR YOU",
+  eyebrow: "CHAPTER 05 — A LETTER, KEPT FOR YOU",
   title: "A few words,",
   titleAccent: "from the heart.",
   recipient: "ถึง [ชื่อผู้รับ]",
