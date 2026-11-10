@@ -1,6 +1,8 @@
 import { ActCard } from "@/components/act-card";
 import { SectionHeading } from "@/components/section-heading";
 import { CinematicIntro } from "@/components/cinematic-intro";
+import { ExperienceChrome } from "@/components/experience-chrome";
+import { EditorialRibbon } from "@/components/editorial-ribbon";
 import { StoryMemories } from "@/components/story-memories";
 import { LetterExperience } from "@/components/letter-experience";
 import { OceanExperience } from "@/components/ocean-experience";
@@ -10,6 +12,7 @@ import { acts, siteContent } from "@/content/site";
 export default function HomePage() {
   return (
     <main id="main-content">
+      <ExperienceChrome />
       <CinematicIntro />
 
       <section className="acts-section section-wrap" id="garden">
@@ -30,6 +33,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      <EditorialRibbon />
       <StoryMemories />
 
       <section className="foundation-note">
