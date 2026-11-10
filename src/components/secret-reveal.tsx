@@ -75,7 +75,7 @@ export function SecretReveal() {
           </div>
         </div>
 
-        <div className="final-reveal-wrap">
+        <div className="final-reveal-wrap" id="final">
           {!finalOpen ? (
             <button
               className="final-reveal-button"
