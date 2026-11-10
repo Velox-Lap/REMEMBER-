@@ -1,6 +1,6 @@
 /* Phase 08 — chapter rail, warp transitions and collision-safe return control */
 html { scroll-padding-top: 104px; }
-#intro, #garden, #story, #memories, #letter, #ocean, #secret, #final {
+#intro, #garden, #story, #memories, #letter, #mixtape, #ocean, #secret, #final {
   scroll-margin-top: 28px;
 }
 .chapter-rail {
