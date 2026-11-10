@@ -729,3 +729,15 @@ a:focus-visible, button:focus-visible {
   opacity: .42; cursor: not-allowed; border-color: rgba(213,225,199,.18);
 }
 .final-reveal-button:disabled:hover { background: transparent; border-color: rgba(213,225,199,.18); }
+
+/* Phase 08 — accessibility and navigation polish */
+.skip-link {
+  position: absolute; z-index: 100; top: 10px; left: 12px; padding: 12px 16px;
+  transform: translateY(-160%); background: var(--color-cream); color: var(--color-forest);
+  font-size: 12px; letter-spacing: .04em; transition: transform 160ms ease;
+}
+.skip-link:focus { transform: translateY(0); }
+.lightbox-panel:focus { outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .skip-link { transition: none; }
+}
