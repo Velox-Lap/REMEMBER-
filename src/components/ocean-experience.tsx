@@ -1,10 +1,15 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";\nimport { useRef } from "react";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { oceanContent } from "@/content/ocean";
 
 export function OceanExperience() {
   const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  const sunOffset = useTransform(scrollYProgress, [0, 1], [54, -54]);
+  const shoreOffset = useTransform(scrollYProgress, [0, 1], [20, -20]);
 
   return (
     <section ref={sectionRef} className="ocean-experience" id="ocean" aria-labelledby="ocean-title">
