@@ -64,7 +64,7 @@ export function MixtapeExperience() {
     if (!audioFiles.length) return;
     const additions: TapeTrack[] = audioFiles.map((file, index) => ({
       id: `local-${Date.now()}-${index}`,
-      title: file.name.replace(/\\.[^/.]+$/, ""),
+      title: file.name.replace(/\.[^/.]+$/, ""),
       fileName: file.name,
       src: URL.createObjectURL(file),
       side: (tracks.length + index) % 2 === 0 ? "A" : "B",
