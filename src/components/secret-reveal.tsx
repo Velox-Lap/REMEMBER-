@@ -70,7 +70,7 @@ export function SecretReveal() {
         </div>
 
         <div className="secret-progress" aria-live="polite">
-          <span>{String(revealed.length).padStart(2, "0")} / 03 FLOWERS DISCOVERED</span>
+          <span>{String(revealed.length).padStart(2, "0")} / {String(secretContent.flowers.length).padStart(2, "0")} FLOWERS DISCOVERED</span>
           <div className="secret-progress-track">
             <span style={{ width: `${(revealed.length / secretContent.flowers.length) * 100}%` }} />
           </div>
