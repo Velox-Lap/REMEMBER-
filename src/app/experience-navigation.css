@@ -222,3 +222,23 @@ html { scroll-padding-top: 104px; }
 .final-chapter-eyebrow {
   margin: 0;
 }
+
+
+/* Final QA pass — make chapter navigation easier to tap and focus */
+.chapter-rail-link:focus-visible,
+.back-to-top:focus-visible {
+  outline: 2px solid #d8e2cf;
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .chapter-rail-link {
+    min-width: 30px;
+    min-height: 32px;
+  }
+}
+@media (max-width: 380px) {
+  .chapter-rail-link {
+    min-width: 27px;
+    min-height: 30px;
+  }
+}
