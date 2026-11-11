@@ -225,7 +225,29 @@ export function AdminConsole() {
     setStatus("ส่งลิงก์เข้าสู่ระบบแล้ว กรุณาตรวจอีเมลและเปิดลิงก์จากอุปกรณ์นี้");
   };
 
-  const verifyAdminPin = async (event: React.FormEvent<HTMLFormElement>) => {
+  const activateAdmin = async () => {
+    if (!client) return;
+    setBusy(true);
+    setStatus("กำลังตรวจสอบอีเมลกับรายชื่อผู้ดูแล...");
+    const { data, error } = await client.functions.invoke("project-2912-gateway", {
+      body: { action: "activate_admin" },
+    });
+    if (error || data?.activated !== true) {
+      setBusy(false);
+      setStatus(error?.message || "อีเมลนี้ยังไม่ได้รับอนุญาตให้เป็นผู้ดูแล กรุณาตรวจสอบ Admin Allowlist");
+      return;
+    }
+    const { data: refreshed, error: refreshError } = await client.auth.refreshSession();
+    setBusy(false);
+    if (refreshError || !refreshed.session) {
+      setStatus("เปิดสิทธิ์แล้ว แต่โหลด Session ใหม่ไม่สำเร็จ กรุณาออกจากระบบแล้วเข้าสู่ระบบอีกครั้ง");
+      return;
+    }
+    setSession(refreshed.session);
+    setStatus("เปิดสิทธิ์ผู้ดูแลสำเร็จ กรุณากรอกรหัส Admin PIN");
+  };
+
+  const verifyAdminPin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!client || !pin) return;
     setBusy(true);
