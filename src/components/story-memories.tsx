@@ -105,6 +105,7 @@ export function StoryMemories({ storyMoments, memoryItems }: { storyMoments: Pro
         </div>
       </section>
 
+      {memoryItems.length > 0 ? (
       <section className="memories-section" id="memories" aria-labelledby="memories-title">
         <div className="memories-shell">
           <div className="memories-heading">
@@ -134,9 +135,10 @@ export function StoryMemories({ storyMoments, memoryItems }: { storyMoments: Pro
               </motion.button>
             ))}
           </div>
-          <p className="memories-footnote">Replace each illustrated frame with a photograph from your own collection.</p>
+          <p className="memories-footnote">A small collection of moments worth keeping.</p>
         </div>
       </section>
+      ) : null}
 
       <AnimatePresence>
         {selectedMemory && (
