@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -188,7 +188,7 @@ export function AdminConsole() {
     if (unlocked) void loadWorkspace();
   }, [unlocked, loadWorkspace]);
 
-  const sendMagicLink = async (event: React.FormEvent<HTMLFormElement>) => {
+  const sendMagicLink = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!client || !email.trim()) return;
     setBusy(true);
@@ -196,7 +196,7 @@ export function AdminConsole() {
     const { error } = await client.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        shouldCreateUser: false,
+        shouldCreateUser: true,
         emailRedirectTo: `${window.location.origin}/admin`,
       },
     });
@@ -401,7 +401,10 @@ export function AdminConsole() {
           <span className="admin-eyebrow">ACCOUNT VERIFIED</span>
           <h1>บัญชียังไม่มี<br /><em>สิทธิ์ผู้ดูแล</em></h1>
           <p>เข้าสู่ระบบด้วย {session.user.email ?? "บัญชีนี้"} สำเร็จ แต่ยังไม่มีสิทธิ์ project_2912_admin จึงไม่สามารถแก้ไขข้อมูลได้</p>
-          <p className="admin-security-note">นี่เป็นการป้องกันโดยตั้งใจ ต้องอนุมัติบัญชีผู้ดูแลก่อน จึงจะใช้ PIN 2912 ปลดล็อกได้</p>
+          <p className="admin-security-note">บัญชีนี้ต้องอยู่ใน Admin Allowlist ก่อน ระบบจะไม่ให้ผู้สมัครทั่วไปยกระดับสิทธิ์ตัวเองได้</p>
+          <button className="admin-primary-button" disabled={busy} onClick={() => void activateAdmin()}>
+            {busy ? "กำลังตรวจสอบ..." : "ตรวจสอบและเปิดสิทธิ์ผู้ดูแล"}
+          </button>
           <button className="admin-secondary-button" onClick={() => void logout()}>ออกจากระบบ</button>
           {status ? <p className="admin-status" role="status">{status}</p> : null}
         </div>
