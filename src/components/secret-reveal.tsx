@@ -20,11 +20,11 @@ export function SecretReveal() {
 
   return (
     <>
-    <section className="secret-section" id="secret">
+    <section className="secret-section" id="secret" aria-labelledby="secret-title">
       <div className="secret-shell">
         <header className="secret-heading">
           <span className="secret-eyebrow">{secretContent.eyebrow}</span>
-          <h2>{secretContent.title.split("\n").map((line, index) => (
+          <h2 id="secret-title">{secretContent.title.split("\n").map((line, index) => (
             <span key={line}>{index === 1 ? <em>{line}</em> : line}</span>
           ))}</h2>
           <p>{secretContent.description}</p>
@@ -80,7 +80,7 @@ export function SecretReveal() {
 
     <section className="final-chapter" id="final" aria-labelledby="final-chapter-title">
       <div className="final-chapter-shell">
-        <span className="final-chapter-eyebrow" id="final-chapter-title">CHAPTER 09 — THE FINALE</span>
+        <h2 className="final-chapter-eyebrow" id="final-chapter-title">CHAPTER 09 — THE FINALE</h2>
         <div className="final-reveal-wrap">
           {!finalOpen ? (
             <button
@@ -90,7 +90,7 @@ export function SecretReveal() {
               disabled={revealed.length !== secretContent.flowers.length}
             >
               <span>THE LAST LITTLE SECRET</span>
-              <strong>{revealed.length === secretContent.flowers.length ? "Open the final chapter" : "Find all three flowers first"} <i aria-hidden="true">↗</i></strong>
+              <strong>{revealed.length === secretContent.flowers.length ? "Open the final chapter" : "Find all {secretContent.flowers.length} flowers first"} <i aria-hidden="true">↗</i></strong>
             </button>
           ) : (
             <div className="final-reveal-card" role="status">
