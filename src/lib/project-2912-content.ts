@@ -90,7 +90,8 @@ export type ProjectContent = {
   secret: ProjectSecret;
 };
 
-export const defaultProjectContent: ProjectContent = {\n  checkpoints: [\n    { question_key: "first_meeting", prompt: "วันแรกที่เราเจอกันคือวันไหน?", sort_order: 1 },\n    { question_key: "first_trip", prompt: "วันแรกที่เราไปเที่ยวด้วยกันคือวันไหน?", sort_order: 2 },\n    { question_key: "first_24_hours", prompt: "วันแรกที่เราได้ใช้เวลาอยู่ด้วยกันครบ 24 ชั่วโมงคือวันไหน?", sort_order: 3 },\n  ],
+export const defaultProjectContent: ProjectContent = {
+  checkpoints: [\n    { question_key: "first_meeting", prompt: "วันแรกที่เราเจอกันคือวันไหน?", sort_order: 1 },\n    { question_key: "first_trip", prompt: "วันแรกที่เราไปเที่ยวด้วยกันคือวันไหน?", sort_order: 2 },\n    { question_key: "first_24_hours", prompt: "วันแรกที่เราได้ใช้เวลาอยู่ด้วยกันครบ 24 ชั่วโมงคือวันไหน?", sort_order: 3 },\n  ],
   site: { ...siteContent },
   acts: acts.map((act) => ({ ...act })),
   storyMoments: storyMoments.map((moment) => ({ ...moment })),
