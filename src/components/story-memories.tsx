@@ -6,7 +6,8 @@ import type { ProjectContent, ProjectMemory } from "@/lib/project-2912-content";
 
 function MemoryArtwork({ tone, imageUrl }: { tone: ProjectMemory["tone"]; imageUrl?: string | null }) {
   return (
-    <div className={`memory-art memory-art--${tone}`} aria-hidden="true">\n      {imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} /> : null}
+    <div className={`memory-art memory-art--${tone}`} aria-hidden="true">
+      {imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} /> : null}
       <span className="memory-art-orbit" />
       <span className="memory-art-shape memory-art-shape--one" />
       <span className="memory-art-shape memory-art-shape--two" />
