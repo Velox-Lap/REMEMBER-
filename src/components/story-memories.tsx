@@ -17,7 +17,7 @@ function MemoryArtwork({ tone, imageUrl }: { tone: ProjectMemory["tone"]; imageU
 }
 
 export function StoryMemories({ storyMoments, memoryItems }: { storyMoments: ProjectContent["storyMoments"]; memoryItems: ProjectContent["memoryItems"] }) {
-  const [selectedMemory, setSelectedMemory] = useState<MemoryItem | null>(null);
+  const [selectedMemory, setSelectedMemory] = useState<ProjectMemory | null>(null);
   const reduceMotion = useReducedMotion();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
