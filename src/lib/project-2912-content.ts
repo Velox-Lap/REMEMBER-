@@ -1,5 +1,5 @@
 import { acts, siteContent } from "@/content/site";
-import { storyMoments, memoryItems } from "@/content/memories";
+import { storyMoments } from "@/content/memories";
 import { letterContent } from "@/content/letter";
 import { oceanContent } from "@/content/ocean";
 import { secretContent } from "@/content/secret";
