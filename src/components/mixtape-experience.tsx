@@ -2,23 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import type { ProjectMixtape, ProjectMixtapeTrack } from "@/lib/project-2912-content";
 
-type TapeTrack = {
-  id: string;
-  title: string;
-  fileName: string;
-  src: string | null;
-  side: "A" | "B";
-};
-
-const initialTracks: TapeTrack[] = [
-  { id: "a1", title: "The first little thing", fileName: "Add your first song", src: null, side: "A" },
-  { id: "a2", title: "A familiar feeling", fileName: "A song that feels like home", src: null, side: "A" },
-  { id: "b1", title: "Somewhere by the sea", fileName: "A memory in sound", src: null, side: "B" },
-  { id: "b2", title: "Until the next chapter", fileName: "The last song on the tape", src: null, side: "B" },
-];
-
-const MAX_AUDIO_FILE_SIZE = 100 * 1024 * 1024;
+type TapeTrack = ProjectMixtapeTrack & { src: string | null };
 
 const timeLabel = (seconds: number) => {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -27,27 +13,41 @@ const timeLabel = (seconds: number) => {
   return mins + ":" + secs;
 };
 
-export function MixtapeExperience() {
-  const [tracks, setTracks] = useState<TapeTrack[]>(initialTracks);
+function publicMediaUrl(path: string | null): string | null {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!base || !path) return null;
+  const encodedPath = path.split("/").map((part) => encodeURIComponent(part)).join("/");
+  return `${base.replace(/\/$/, "")}/storage/v1/object/public/project-2912-media/${encodedPath}`;
+}
+
+export function MixtapeExperience({ content }: { content: ProjectMixtape }) {
+  const tracks = useMemo<TapeTrack[]>(
+    () => [...content.tracks]
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((track) => ({ ...track, src: publicMediaUrl(track.storagePath) })),
+    [content.tracks],
+  );
   const [side, setSide] = useState<"A" | "B">("A");
-  const [activeId, setActiveId] = useState("a1");
+  const [activeId, setActiveId] = useState("");
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [audioError, setAudioError] = useState("");
   const audioRef = useRef<HTMLAudioElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const objectUrlsRef = useRef<string[]>([]);
   const reduceMotion = useReducedMotion();
 
-  const visibleTracks = useMemo(
-    () => tracks.filter((track) => track.side === side),
-    [tracks, side],
-  );
+  const visibleTracks = useMemo(() => tracks.filter((track) => track.side === side), [tracks, side]);
   const activeTrack = visibleTracks.find((track) => track.id === activeId) ?? visibleTracks[0];
   const playableTracks = visibleTracks.filter((track) => track.src);
   const sideACount = tracks.filter((track) => track.side === "A" && track.src).length;
   const sideBCount = tracks.filter((track) => track.side === "B" && track.src).length;
+  const coverImageUrl = publicMediaUrl(content.coverImagePath);
+
+  useEffect(() => {
+    if (!visibleTracks.some((track) => track.id === activeId)) {
+      setActiveId(visibleTracks[0]?.id ?? "");
+    }
+  }, [activeId, visibleTracks]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -65,57 +65,10 @@ export function MixtapeExperience() {
     audio.load();
   }, [activeTrack?.id, activeTrack?.src]);
 
-  useEffect(() => {
-    return () => {
-      objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-      objectUrlsRef.current = [];
-    };
-  }, []);
-
   const chooseSide = (nextSide: "A" | "B") => {
     setSide(nextSide);
-    const nextTrack = tracks.find((track) => track.side === nextSide);
-    setActiveId(nextTrack?.id ?? "");
+    setActiveId(tracks.find((track) => track.side === nextSide)?.id ?? "");
     setAudioError("");
-  };
-
-  const addAudioFiles = (files: FileList | null) => {
-    if (!files?.length) return;
-
-    const selectedFiles = Array.from(files);
-    const audioFiles = selectedFiles.filter((file) => file.type.startsWith("audio/"));
-    const oversizedFiles = audioFiles.filter((file) => file.size > MAX_AUDIO_FILE_SIZE);
-
-    if (!audioFiles.length) {
-      setAudioError("Please choose a supported audio file.");
-      return;
-    }
-    if (oversizedFiles.length) {
-      setAudioError("Each audio file must be 100 MB or smaller. Larger files were skipped.");
-    } else {
-      setAudioError("");
-    }
-
-    const acceptedFiles = audioFiles.filter((file) => file.size <= MAX_AUDIO_FILE_SIZE);
-    if (!acceptedFiles.length) return;
-
-    const existingAudioCount = tracks.filter((track) => track.src).length;
-    const additions: TapeTrack[] = acceptedFiles.map((file, index) => {
-      const src = URL.createObjectURL(file);
-      objectUrlsRef.current.push(src);
-      return {
-        id: "local-" + Date.now() + "-" + index + "-" + Math.random().toString(36).slice(2, 8),
-        title: file.name.replace(/\.[^/.]+$/, "") || "Untitled track",
-        fileName: file.name,
-        src,
-        side: (existingAudioCount + index) % 2 === 0 ? "A" : "B",
-      };
-    });
-
-    setTracks((current) => [...current.filter((track) => track.src), ...additions]);
-    setSide(additions[0].side);
-    setActiveId(additions[0].id);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const togglePlayback = async () => {
@@ -128,7 +81,7 @@ export function MixtapeExperience() {
         await audio.play();
       } catch {
         setPlaying(false);
-        setAudioError("This file could not be played by your browser. Try another audio format.");
+        setAudioError("This song could not be played in this browser. Please try another audio format.");
       }
     } else {
       audio.pause();
@@ -138,9 +91,7 @@ export function MixtapeExperience() {
   const moveTrack = (direction: -1 | 1) => {
     if (!playableTracks.length) return;
     const index = playableTracks.findIndex((track) => track.id === activeTrack?.id);
-    const nextIndex = index < 0
-      ? 0
-      : (index + direction + playableTracks.length) % playableTracks.length;
+    const nextIndex = index < 0 ? 0 : (index + direction + playableTracks.length) % playableTracks.length;
     setActiveId(playableTracks[nextIndex].id);
   };
 
@@ -158,9 +109,9 @@ export function MixtapeExperience() {
     <section className="mixtape-section" id="mixtape" aria-labelledby="mixtape-title">
       <div className="mixtape-shell">
         <div className="mixtape-intro">
-          <span className="mixtape-eyebrow">CHAPTER 06 — THE SOUNDTRACK</span>
-          <h2 id="mixtape-title">Some moments<br /><em>sound like us.</em></h2>
-          <p>A little collection of songs, saved like pressed flowers between the pages of a favourite book.</p>
+          <span className="mixtape-eyebrow">{content.eyebrow}</span>
+          <h2 id="mixtape-title">{content.title}<br /><em>{content.titleAccent}</em></h2>
+          <p>{content.description}</p>
         </div>
 
         <div className="mixtape-layout">
@@ -175,10 +126,13 @@ export function MixtapeExperience() {
               <span>PROJECT 29.12</span>
               <span>PERSONAL MIXTAPE · NO. 01</span>
             </div>
+            {coverImageUrl ? (
+              <img className="mixtape-cover-image" src={coverImageUrl} alt="Mixtape cover artwork" loading="lazy" />
+            ) : null}
             <div className="cassette-shell">
               <div className="cassette-label">
                 <div className="cassette-label-top">
-                  <span>THE LITTLE THINGS</span>
+                  <span>{content.tapeLabel || "THE LITTLE THINGS"}</span>
                   <span>29·12</span>
                 </div>
                 <div className="cassette-title">{side === "A" ? "A side" : "B side"}<i> / our soundtrack</i></div>
@@ -195,16 +149,22 @@ export function MixtapeExperience() {
             </div>
             <div className="cassette-player-bottomline">
               <span>AN OBJECT MADE OF MEMORIES</span>
-              <span>{(sideACount + sideBCount).toString().padStart(2, "0")} TRACKS ADDED</span>
+              <span>{tracks.length.toString().padStart(2, "0")} TRACKS</span>
             </div>
           </motion.div>
 
           <div className="mixtape-console">
             <div className="mixtape-console-heading">
-              <div><span className="mixtape-small-label">NOW PLAYING</span><h3>{activeTrack?.title ?? "Choose a song"}</h3></div>
+              <div>
+                <span className="mixtape-small-label">NOW PLAYING</span>
+                <h3>{activeTrack?.title || "A song waiting to be added"}</h3>
+              </div>
               <span className={"mixtape-live-dot" + (playing ? " is-active" : "")} aria-hidden="true" />
             </div>
-            <p className="mixtape-track-subtitle">{activeTrack?.src ? activeTrack.fileName : "Your soundtrack is waiting for its songs."}</p>
+            <p className="mixtape-track-subtitle">
+              {activeTrack ? [activeTrack.artist, activeTrack.fileName].filter(Boolean).join(" · ") : "The soundtrack is being prepared."}
+            </p>
+            {activeTrack?.note ? <p className="mixtape-track-note">{activeTrack.note}</p> : null}
 
             <div className="mixtape-side-tabs" aria-label="Tape sides">
               <button type="button" aria-pressed={side === "A"} className={side === "A" ? "is-active" : ""} onClick={() => chooseSide("A")}>SIDE A <span>{String(sideACount).padStart(2, "0")}</span></button>
@@ -213,7 +173,7 @@ export function MixtapeExperience() {
 
             <div className="mixtape-track-list" aria-live="polite">
               {visibleTracks.length === 0 ? (
-                <p className="mixtape-empty-side">This side is waiting for a song.</p>
+                <p className="mixtape-empty-side">This side is waiting for its songs.</p>
               ) : visibleTracks.map((track, index) => (
                 <button
                   type="button"
@@ -223,8 +183,11 @@ export function MixtapeExperience() {
                   onClick={() => setActiveId(track.id)}
                 >
                   <span className="mixtape-track-index">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="mixtape-track-info"><strong>{track.title}</strong><small>{track.src ? track.fileName : "A place for a favourite song"}</small></span>
-                  <span className="mixtape-track-state">{activeTrack?.id === track.id && playing ? "PLAYING" : track.src ? "READY" : "EMPTY"}</span>
+                  <span className="mixtape-track-info">
+                    <strong>{track.title || "Untitled track"}</strong>
+                    <small>{track.artist || track.fileName || "A place for a favourite song"}</small>
+                  </span>
+                  <span className="mixtape-track-state">{activeTrack?.id === track.id && playing ? "PLAYING" : track.src ? "READY" : "PENDING"}</span>
                 </button>
               ))}
             </div>
@@ -253,20 +216,15 @@ export function MixtapeExperience() {
               <button type="button" className="mixtape-skip" aria-label="Next track" disabled={!playableTracks.length} onClick={() => moveTrack(1)}>↷</button>
             </div>
 
-            <div className="mixtape-add-row">
-              <button type="button" className="mixtape-add-button" onClick={() => fileInputRef.current?.click()}>＋ ADD YOUR SONGS</button>
-              <span>MP3 · WAV · M4A · OGG</span>
-              <input ref={fileInputRef} type="file" accept="audio/*" multiple hidden onChange={(event) => addAudioFiles(event.target.files)} />
-            </div>
-            <p className="mixtape-local-note">Audio files stay in this browser session. Nothing is uploaded to a server.</p>
+            <p className="mixtape-local-note">A soundtrack chosen and arranged in the private studio.</p>
             <p className="mixtape-audio-status" role="status" aria-live="polite">{audioError}</p>
           </div>
         </div>
 
         <div className="mixtape-note">
           <span className="mixtape-note-mark">“</span>
-          <p>Some songs become places. You hear the first note, and suddenly you are there again.</p>
-          <span>— A NOTE BETWEEN TRACKS</span>
+          <p>{content.quote}</p>
+          <span>— {content.quoteAttribution}</span>
         </div>
       </div>
       <audio
@@ -283,7 +241,7 @@ export function MixtapeExperience() {
         onError={() => {
           if (activeTrack?.src) {
             setPlaying(false);
-            setAudioError("The selected audio file could not be loaded. Try a different file.");
+            setAudioError("The selected audio file could not be loaded. Please try another format.");
           }
         }}
         onEnded={handleTrackEnded}
