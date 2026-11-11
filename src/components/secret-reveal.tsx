@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { secretContent } from "@/content/secret";
+import type { ProjectContent } from "@/lib/project-2912-content";
 
-export function SecretReveal() {
+export function SecretReveal({ content: secretContent }: { content: ProjectContent["secret"] }) {
   const [revealed, setRevealed] = useState<string[]>([]);
   const [finalOpen, setFinalOpen] = useState(false);
 
