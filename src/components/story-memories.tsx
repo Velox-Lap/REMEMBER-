@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { ProjectContent, ProjectMemory } from "@/lib/project-2912-content";
 
 function MemoryArtwork({ tone, imageUrl }: { tone: ProjectMemory["tone"]; imageUrl?: string | null }) {
   return (
     <div className={`memory-art memory-art--${tone}`} aria-hidden="true">
-      {imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} /> : null}
+      {imageUrl ? <Image src={imageUrl} alt="" fill unoptimized sizes="(max-width: 700px) 90vw, 420px" className="memory-art-photo" /> : null}
       <span className="memory-art-orbit" />
       <span className="memory-art-shape memory-art-shape--one" />
       <span className="memory-art-shape memory-art-shape--two" />
       <span className="memory-art-stamp">29.12</span>
-      <span className="memory-art-placeholder">YOUR PHOTO HERE</span>
+      {imageUrl ? null : <span className="memory-art-placeholder">YOUR PHOTO HERE</span>}
     </div>
   );
 }
