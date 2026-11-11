@@ -816,3 +816,24 @@ a:focus-visible, button:focus-visible {
   outline: 2px solid #d7e1cc;
   outline-offset: 4px;
 }
+
+
+/* Memory checkpoint — server-verified three-date gate before the Secret Garden */
+.memory-checkpoint { width: min(680px, 100%); margin: 0 auto; text-align: center; }
+.memory-checkpoint > h2 { margin: 22px 0 16px; color: #f5f2e8; font: 400 clamp(46px,7vw,82px)/.92 var(--font-cormorant), Georgia,serif; letter-spacing: -.04em; }
+.memory-checkpoint > h2 em { color: #c3d2bd; font-weight: 400; }
+.memory-checkpoint-intro { max-width: 470px; margin: 0 auto 34px; color: rgba(248,246,239,.68); font-size: 12px; line-height: 1.9; }
+.memory-checkpoint-card { width: min(520px,100%); margin: 0 auto; padding: clamp(22px,4vw,38px); border: 1px solid rgba(248,246,239,.22); background: rgba(12,32,25,.28); text-align: left; }
+.memory-checkpoint-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #c1d0bb; font-size: 8px; letter-spacing: .17em; }
+.memory-checkpoint-progress { height: 2px; margin: 16px 0 28px; background: rgba(248,246,239,.16); }
+.memory-checkpoint-progress span { display: block; height: 100%; background: #c1d0bb; transition: width 220ms ease; }
+.memory-checkpoint-card h3 { margin: 0 0 25px; color: #f8f6ef; font: 400 clamp(23px,4vw,32px)/1.25 var(--font-cormorant),Georgia,serif; }
+.memory-checkpoint-input { display: grid; gap: 8px; color: rgba(248,246,239,.64); font-size: 10px; letter-spacing: .08em; }
+.memory-checkpoint-input input { width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid rgba(248,246,239,.3); border-radius: 0; color: #f8f6ef; background: rgba(248,246,239,.07); font: 14px var(--font-inter),Arial,sans-serif; letter-spacing: .12em; }
+.memory-checkpoint-input input::placeholder { color: rgba(248,246,239,.35); }
+.memory-checkpoint-input input:focus { outline: 2px solid #c1d0bb; outline-offset: 2px; }
+.memory-checkpoint-hint { margin: 9px 0 20px; color: rgba(248,246,239,.43); font-size: 9px; }
+.memory-checkpoint-submit { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 12px 15px; border: 1px solid rgba(248,246,239,.5); color: #253e33; background: #d9e1d0; font-size: 9px; letter-spacing: .15em; cursor: pointer; }
+.memory-checkpoint-submit:disabled { opacity: .5; cursor: not-allowed; }
+.memory-checkpoint-feedback { min-height: 18px; margin: 13px 0 0; color: #e7c5ae; font-size: 10px; line-height: 1.6; }
+@media (prefers-reduced-motion: reduce) { .memory-checkpoint-progress span { transition: none; } }
