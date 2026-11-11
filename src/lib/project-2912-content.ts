@@ -71,6 +71,29 @@ export type ProjectCheckpoint = {
   sort_order: number;
 };
 
+export type ProjectMixtapeTrack = {
+  id: string;
+  title: string;
+  artist: string;
+  note: string;
+  side: "A" | "B";
+  fileName: string;
+  storagePath: string | null;
+  sortOrder: number;
+};
+
+export type ProjectMixtape = {
+  eyebrow: string;
+  title: string;
+  titleAccent: string;
+  description: string;
+  tapeLabel: string;
+  quote: string;
+  quoteAttribution: string;
+  coverImagePath: string | null;
+  tracks: ProjectMixtapeTrack[];
+};
+
 export type ProjectContent = {
   checkpoints: ProjectCheckpoint[];
   site: {
@@ -86,6 +109,7 @@ export type ProjectContent = {
   storyMoments: ProjectStoryMoment[];
   memoryItems: ProjectMemory[];
   letter: ProjectLetter;
+  mixtape: ProjectMixtape;
   ocean: ProjectOcean;
   secret: ProjectSecret;
 };
@@ -99,8 +123,19 @@ export const defaultProjectContent: ProjectContent = {
   site: { ...siteContent },
   acts: acts.map((act) => ({ ...act })),
   storyMoments: storyMoments.map((moment) => ({ ...moment })),
-  memoryItems: memoryItems.map((memory) => ({ ...memory, imageUrl: null })),
+  memoryItems: [],
   letter: { ...letterContent, paragraphs: [...letterContent.paragraphs] },
+  mixtape: {
+    eyebrow: "CHAPTER 06 — THE SOUNDTRACK",
+    title: "Some moments",
+    titleAccent: "sound like us.",
+    description: "A little collection of songs, saved like pressed flowers between the pages of a favourite book.",
+    tapeLabel: "THE LITTLE THINGS",
+    quote: "Some songs become places. You hear the first note, and suddenly you are there again.",
+    quoteAttribution: "A NOTE BETWEEN TRACKS",
+    coverImagePath: null,
+    tracks: [],
+  },
   ocean: {
     ...oceanContent,
     memories: oceanContent.memories.map((memory) => ({ ...memory })) as ProjectOcean["memories"],
@@ -122,6 +157,7 @@ function mergeStoredContent(value: unknown): ProjectContent {
   const letter = isObject(candidate.letter) ? candidate.letter : {};
   const ocean = isObject(candidate.ocean) ? candidate.ocean : {};
   const secret = isObject(candidate.secret) ? candidate.secret : {};
+  const mixtape = isObject(candidate.mixtape) ? candidate.mixtape : {};
 
   return {
     ...defaultProjectContent,
@@ -134,6 +170,11 @@ function mergeStoredContent(value: unknown): ProjectContent {
       ...defaultProjectContent.letter,
       ...letter,
       paragraphs: Array.isArray(letter.paragraphs) ? letter.paragraphs as string[] : defaultProjectContent.letter.paragraphs,
+    },
+    mixtape: {
+      ...defaultProjectContent.mixtape,
+      ...mixtape,
+      tracks: Array.isArray(mixtape.tracks) ? mixtape.tracks as ProjectMixtapeTrack[] : defaultProjectContent.mixtape.tracks,
     },
     ocean: {
       ...defaultProjectContent.ocean,
