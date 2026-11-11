@@ -65,7 +65,7 @@ export type ProjectSecret = {
   replayLabel: string;
 };
 
-export type ProjectContent = {
+export type ProjectCheckpoint = {\n  question_key: "first_meeting" | "first_trip" | "first_24_hours";\n  prompt: string;\n  sort_order: number;\n};\n\nexport type ProjectContent = {\n  checkpoints: ProjectCheckpoint[];
   site: {
     title: string;
     concept: string;
@@ -83,7 +83,7 @@ export type ProjectContent = {
   secret: ProjectSecret;
 };
 
-export const defaultProjectContent: ProjectContent = {
+export const defaultProjectContent: ProjectContent = {\n  checkpoints: [\n    { question_key: "first_meeting", prompt: "วันแรกที่เราเจอกันคือวันไหน?", sort_order: 1 },\n    { question_key: "first_trip", prompt: "วันแรกที่เราไปเที่ยวด้วยกันคือวันไหน?", sort_order: 2 },\n    { question_key: "first_24_hours", prompt: "วันแรกที่เราได้ใช้เวลาอยู่ด้วยกันครบ 24 ชั่วโมงคือวันไหน?", sort_order: 3 },\n  ],
   site: { ...siteContent },
   acts: acts.map((act) => ({ ...act })),
   storyMoments: storyMoments.map((moment) => ({ ...moment })),
@@ -143,7 +143,7 @@ export async function getProjectContent(): Promise<ProjectContent> {
 
   try {
     const headers = { apikey: key, Authorization: `Bearer ${key}` };
-    const [contentResponse, memoryResponse] = await Promise.all([
+    const [contentResponse, memoryResponse, questionResponse] = await Promise.all([
       fetch(`${url}/rest/v1/project_2912_content?id=eq.main&select=payload&is_published=eq.true&limit=1`, {
         headers,
         cache: "no-store",
@@ -182,7 +182,7 @@ export async function getProjectContent(): Promise<ProjectContent> {
       }
     }
 
-    return content;
+    if (questionResponse.ok) {\n      const questions = await questionResponse.json() as ProjectCheckpoint[];\n      if (questions.length) content = { ...content, checkpoints: questions };\n    }\n\n    return content;
   } catch (error) {
     console.error("PROJECT 29.12 public content fallback:", error);
     return defaultProjectContent;
