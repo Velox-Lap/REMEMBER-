@@ -14,7 +14,7 @@ export default function HomePage() {
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <ExperienceNavigation />
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
       <CinematicIntro />
 
       <section className="acts-section section-wrap" id="garden">
