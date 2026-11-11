@@ -86,3 +86,37 @@
 @media (prefers-reduced-motion: reduce) {
   .admin-primary-button, .admin-secondary-button { transition: none; }
 }
+
+
+/* Admin media and select controls */
+.admin-field select {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid rgba(38,53,46,.18);
+  border-radius: 2px;
+  color: #26352e;
+  background: #fffefa;
+  font: 13px/1.6 var(--font-inter), Arial, sans-serif;
+}
+.admin-field select:focus {
+  outline: 2px solid rgba(94,128,108,.35);
+  outline-offset: 2px;
+  border-color: #5e806c;
+}
+.admin-track-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.admin-track-actions .admin-remove-button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+.admin-upload-field small {
+  color: #778177;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 420px) {
+  .admin-track-actions { flex-wrap: wrap; justify-content: flex-end; }
+}
