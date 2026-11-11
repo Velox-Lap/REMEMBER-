@@ -1,7 +1,7 @@
 export const siteContent = {
   title: "PROJECT 29.12",
   concept: "A Journey Through Our Little Universe",
-  recipientName: "[RECIPIENT NAME]",
+  recipientName: "คุณ",
   openingHeadline: "A Little World,\nJust for You.",
   openingSubtitle:
     "A small collection of moments, places, and things worth keeping.",
