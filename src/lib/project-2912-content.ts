@@ -164,6 +164,10 @@ export async function getProjectContent(): Promise<ProjectContent> {
         headers,
         cache: "no-store",
       }),
+      fetch(`${url}/rest/v1/project_2912_questions?select=question_key,prompt,sort_order&is_active=eq.true&order=sort_order.asc`, {
+        headers,
+        cache: "no-store",
+      }),
     ]);
 
     if (!contentResponse.ok) throw new Error("Could not load published content");
