@@ -105,7 +105,8 @@ export function AdminConsole() {
   const [session, setSession] = useState<Session | null>(null);
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
-  const [unlocked, setUnlocked] = useState(false);\n  const [pinExpiresAt, setPinExpiresAt] = useState<number | null>(null);
+  const [unlocked, setUnlocked] = useState(false);
+  const [pinExpiresAt, setPinExpiresAt] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [content, setContent] = useState<ProjectContent>(defaultProjectContent);
   const [gallery, setGallery] = useState<ProjectMemory[]>([]);
