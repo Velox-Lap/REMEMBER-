@@ -12,9 +12,11 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] Load / and confirm the intro is the first visible chapter.
 - [ ] Use the intro CTA and confirm it scrolls to Garden.
 - [ ] Activate all nine chapter-rail buttons in order and out of order.
-- [ ] Rapidly activate chapter buttons; confirm the last selected chapter wins.
+- [ ] Confirm the Chapter Warp overlay covers the transition and remains until smooth scrolling completes.
+- [ ] Rapidly activate chapter buttons; confirm the last selected chapter wins and no stale overlay remains.
 - [ ] Confirm the active chapter indicator follows manual scrolling.
-- [ ] Confirm back-to-top does not cover important text or controls.
+- [ ] Confirm Back to Top appears after scrolling and hides near the footer.
+- [ ] Confirm Back to Top does not cover important text or controls.
 - [ ] At mobile widths, confirm chapter rail and back-to-top do not overlap.
 - [ ] Use the skip link with a keyboard; confirm focus moves to main content.
 - [ ] Enable reduced motion; confirm navigation and decorative animations respect it.
@@ -62,6 +64,7 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] No browser console errors during the flows above.
 - [ ] No horizontal overflow at the listed viewport widths.
 - [ ] No visible content is obscured by fixed-position controls.
+- [ ] The supplied milestone dates match the confirmed answers: 03/07/2025, 02/08/2026, and 19/09/2026.
 - [ ] Personal photos, final copy, and intended audio are supplied and reviewed.
 - [ ] Admin owner email is allowlisted and magic-link login is tested.
 - [ ] Supabase Auth redirect URLs include the intended Vercel domains.
