@@ -24,6 +24,7 @@ export function ExperienceNavigation() {
   const reduceMotion = useReducedMotion();
   const transitionTimerRef = useRef<number | null>(null);
   const scrollTimerRef = useRef<number | null>(null);
+  const scrollEndHandlerRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const sections = chapters
@@ -41,7 +42,12 @@ export function ExperienceNavigation() {
     );
 
     sections.forEach((section) => observer.observe(section));
-    const onScroll = () => setShowTop(window.scrollY > 520);
+    const onScroll = () => {
+      const scrollableHeight = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const distanceToBottom = scrollableHeight - window.scrollY;
+      // Keep the floating control away from footer copy and final actions.
+      setShowTop(window.scrollY > 520 && distanceToBottom > 160);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
@@ -50,6 +56,10 @@ export function ExperienceNavigation() {
       window.removeEventListener("scroll", onScroll);
       if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
       if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+      if (scrollEndHandlerRef.current) {
+        window.removeEventListener("scrollend", scrollEndHandlerRef.current);
+        scrollEndHandlerRef.current = null;
+      }
     };
   }, []);
 
@@ -59,6 +69,10 @@ export function ExperienceNavigation() {
 
     if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
     if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+    if (scrollEndHandlerRef.current) {
+      window.removeEventListener("scrollend", scrollEndHandlerRef.current);
+      scrollEndHandlerRef.current = null;
+    }
     setTargetLabel(label);
     setActiveChapter(id);
 
@@ -69,12 +83,23 @@ export function ExperienceNavigation() {
 
     setTransitioning(true);
     transitionTimerRef.current = window.setTimeout(() => {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-      scrollTimerRef.current = window.setTimeout(() => {
-        setTransitioning(false);
+      const finishTransition = () => {
+        if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+        if (scrollEndHandlerRef.current) {
+          window.removeEventListener("scrollend", scrollEndHandlerRef.current);
+          scrollEndHandlerRef.current = null;
+        }
         transitionTimerRef.current = null;
         scrollTimerRef.current = null;
-      }, 720);
+        setTransitioning(false);
+      };
+      scrollEndHandlerRef.current = finishTransition;
+      window.addEventListener("scrollend", finishTransition, { once: true });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      // scrollend is preferred; timeout is a fallback for browsers that do not emit it.
+      const distance = Math.abs(target.getBoundingClientRect().top);
+      const fallbackDelay = Math.min(1800, Math.max(700, distance / 3));
+      scrollTimerRef.current = window.setTimeout(finishTransition, fallbackDelay);
     }, 260);
   };
 
