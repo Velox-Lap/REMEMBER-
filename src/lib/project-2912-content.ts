@@ -91,7 +91,11 @@ export type ProjectContent = {
 };
 
 export const defaultProjectContent: ProjectContent = {
-  checkpoints: [\n    { question_key: "first_meeting", prompt: "วันแรกที่เราเจอกันคือวันไหน?", sort_order: 1 },\n    { question_key: "first_trip", prompt: "วันแรกที่เราไปเที่ยวด้วยกันคือวันไหน?", sort_order: 2 },\n    { question_key: "first_24_hours", prompt: "วันแรกที่เราได้ใช้เวลาอยู่ด้วยกันครบ 24 ชั่วโมงคือวันไหน?", sort_order: 3 },\n  ],
+  checkpoints: [
+    { question_key: "first_meeting", prompt: "วันแรกที่เราเจอกันคือวันไหน?", sort_order: 1 },
+    { question_key: "first_trip", prompt: "วันแรกที่เราไปเที่ยวด้วยกันคือวันไหน?", sort_order: 2 },
+    { question_key: "first_24_hours", prompt: "วันแรกที่เราได้ใช้เวลาอยู่ด้วยกันครบ 24 ชั่วโมงคือวันไหน?", sort_order: 3 },
+  ],
   site: { ...siteContent },
   acts: acts.map((act) => ({ ...act })),
   storyMoments: storyMoments.map((moment) => ({ ...moment })),
@@ -190,7 +194,12 @@ export async function getProjectContent(): Promise<ProjectContent> {
       }
     }
 
-    if (questionResponse.ok) {\n      const questions = await questionResponse.json() as ProjectCheckpoint[];\n      if (questions.length) content = { ...content, checkpoints: questions };\n    }\n\n    return content;
+    if (questionResponse.ok) {
+      const questions = await questionResponse.json() as ProjectCheckpoint[];
+      if (questions.length) content = { ...content, checkpoints: questions };
+    }
+
+    return content;
   } catch (error) {
     console.error("PROJECT 29.12 public content fallback:", error);
     return defaultProjectContent;
