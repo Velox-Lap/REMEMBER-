@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -826,7 +827,7 @@ export function AdminConsole() {
                     <span className="admin-card-index">PHOTO {String(index + 1).padStart(2, "0")}</span>
                     <button className="admin-remove-button" onClick={() => setGallery((items) => items.filter((item) => item.id !== memory.id))}>ลบรูปนี้</button>
                   </div>
-                  {memory.imageUrl ? <img className="admin-image-preview" src={memory.imageUrl} alt={memory.title || "Memory preview"} /> : <div className="admin-image-placeholder">ยังไม่ได้เลือกรูปภาพ</div>}
+                  {memory.imageUrl ? <Image className="admin-image-preview" src={memory.imageUrl} alt={memory.title || "Memory preview"} width={800} height={500} unoptimized /> : <div className="admin-image-placeholder">ยังไม่ได้เลือกรูปภาพ</div>}
                   <label className="admin-upload-field">
                     <span>เลือกรูปภาพ (สูงสุด 20 MB)</span>
                     <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={busy} onChange={(event: ChangeEvent<HTMLInputElement>) => {
