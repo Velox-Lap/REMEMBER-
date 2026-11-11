@@ -10,13 +10,15 @@ import {
   type ProjectMemory,
 } from "@/lib/project-2912-content";
 
-type Tab = "home" | "story" | "letter" | "ocean" | "secret" | "gallery" | "checkpoints";
+type Tab = "home" | "acts" | "story" | "letter" | "mixtape" | "ocean" | "secret" | "gallery" | "checkpoints";
 type Question = { question_key: string; prompt: string; sort_order: number; is_active: boolean };
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "home", label: "หน้าแรก" },
+  { id: "acts", label: "Act Cards" },
   { id: "story", label: "เรื่องราว" },
   { id: "letter", label: "จดหมาย" },
+  { id: "mixtape", label: "Mixtape" },
   { id: "ocean", label: "ทะเล" },
   { id: "secret", label: "สวนลับ" },
   { id: "gallery", label: "รูปภาพ" },
@@ -37,6 +39,11 @@ function mergeContent(value: unknown): ProjectContent {
       ...defaultProjectContent.letter,
       ...saved.letter,
       paragraphs: Array.isArray(saved.letter?.paragraphs) ? saved.letter.paragraphs : defaultProjectContent.letter.paragraphs,
+    },
+    mixtape: {
+      ...defaultProjectContent.mixtape,
+      ...saved.mixtape,
+      tracks: Array.isArray(saved.mixtape?.tracks) ? saved.mixtape.tracks : defaultProjectContent.mixtape.tracks,
     },
     ocean: {
       ...defaultProjectContent.ocean,
@@ -386,6 +393,122 @@ export function AdminConsole() {
     setStatus("เปลี่ยนคำตอบและบันทึกแบบ Hash สำเร็จ");
   };
 
+  const updateMixtape = (key: keyof ProjectContent["mixtape"], value: string | null) =>
+    setContent((current) => ({ ...current, mixtape: { ...current.mixtape, [key]: value } }));
+
+  const updateMixtapeTrack = (
+    trackId: string,
+    patch: Partial<ProjectContent["mixtape"]["tracks"][number]>,
+  ) => setContent((current) => ({
+    ...current,
+    mixtape: {
+      ...current.mixtape,
+      tracks: current.mixtape.tracks.map((track) => track.id === trackId ? { ...track, ...patch } : track),
+    },
+  }));
+
+  const addMixtapeTrack = () => setContent((current) => {
+    const nextIndex = current.mixtape.tracks.length;
+    const side = nextIndex % 2 === 0 ? "A" : "B";
+    return {
+      ...current,
+      mixtape: {
+        ...current.mixtape,
+        tracks: [...current.mixtape.tracks, {
+          id: crypto.randomUUID(),
+          title: "",
+          artist: "",
+          note: "",
+          side,
+          fileName: "",
+          storagePath: null,
+          sortOrder: nextIndex,
+        }],
+      },
+    };
+  });
+
+  const moveMixtapeTrack = (trackId: string, direction: -1 | 1) => setContent((current) => {
+    const tracks = [...current.mixtape.tracks];
+    const index = tracks.findIndex((track) => track.id === trackId);
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= tracks.length) return current;
+    [tracks[index], tracks[nextIndex]] = [tracks[nextIndex], tracks[index]];
+    return {
+      ...current,
+      mixtape: { ...current.mixtape, tracks: tracks.map((track, sortOrder) => ({ ...track, sortOrder })) },
+    };
+  });
+
+  const uploadMixtapeAudio = async (trackId: string, file: File) => {
+    if (!client || !session?.user.id) return;
+    const acceptedTypes = new Set(["audio/mpeg", "audio/mp4", "audio/wav", "audio/ogg"]);
+    if (!acceptedTypes.has(file.type) || file.size > 24 * 1024 * 1024) {
+      setStatus("รองรับ MP3, M4A/MP4, WAV หรือ OGG ขนาดไม่เกิน 24 MB ต่อเพลง");
+      return;
+    }
+    setBusy(true);
+    setStatus("กำลังอัปโหลดเพลงไปยัง Supabase Storage...");
+    const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "").toLowerCase() || "mp3";
+    const path = `mixtape/${session.user.id}/${trackId}.${extension}`;
+    const previousPath = content.mixtape.tracks.find((track) => track.id === trackId)?.storagePath;
+    const { error } = await client.storage.from("project-2912-media").upload(path, file, {
+      upsert: true,
+      contentType: file.type,
+      cacheControl: "3600",
+    });
+    if (error) {
+      setBusy(false);
+      setStatus("อัปโหลดเพลงไม่สำเร็จ: " + error.message);
+      return;
+    }
+    if (previousPath && previousPath !== path) {
+      await client.storage.from("project-2912-media").remove([previousPath]);
+    }
+    updateMixtapeTrack(trackId, { storagePath: path, fileName: file.name });
+    setBusy(false);
+    setStatus("อัปโหลดเพลงแล้ว · กดบันทึก Mixtape เพื่อเผยแพร่รายการเพลง");
+  };
+
+  const uploadMixtapeCover = async (file: File) => {
+    if (!client || !session?.user.id) return;
+    if (!file.type.startsWith("image/") || file.size > 20 * 1024 * 1024) {
+      setStatus("ปกเทปรองรับไฟล์ภาพขนาดไม่เกิน 20 MB");
+      return;
+    }
+    setBusy(true);
+    setStatus("กำลังอัปโหลดปก Mixtape...");
+    const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
+    const path = `mixtape/${session.user.id}/cover.${extension}`;
+    const previousPath = content.mixtape.coverImagePath;
+    const { error } = await client.storage.from("project-2912-media").upload(path, file, {
+      upsert: true,
+      contentType: file.type,
+      cacheControl: "3600",
+    });
+    if (error) {
+      setBusy(false);
+      setStatus("อัปโหลดปกไม่สำเร็จ: " + error.message);
+      return;
+    }
+    if (previousPath && previousPath !== path) {
+      await client.storage.from("project-2912-media").remove([previousPath]);
+    }
+    updateMixtape("coverImagePath", path);
+    setBusy(false);
+    setStatus("อัปโหลดปกแล้ว · กดบันทึก Mixtape เพื่อเผยแพร่");
+  };
+
+  const removeMixtapeTrack = (trackId: string) => setContent((current) => ({
+    ...current,
+    mixtape: {
+      ...current.mixtape,
+      tracks: current.mixtape.tracks
+        .filter((track) => track.id !== trackId)
+        .map((track, sortOrder) => ({ ...track, sortOrder })),
+    },
+  }));
+
   const updateSite = (key: keyof ProjectContent["site"], value: string) =>
     setContent((current) => ({ ...current, site: { ...current.site, [key]: value } }));
   const updateLetter = (key: keyof ProjectContent["letter"], value: string | string[]) =>
@@ -543,6 +666,30 @@ export function AdminConsole() {
             </Panel>
           ) : null}
 
+          {activeTab === "acts" ? (
+            <Panel title="สามโลกของเรา" description="แก้ชื่อ คำโปรย และธีมของการ์ดทั้งสามใบในหน้าแรก">
+              {content.acts.map((act, index) => (
+                <div className="admin-repeat-card" key={act.number}>
+                  <span className="admin-card-index">ACT {act.number}</span>
+                  <div className="admin-form-grid">
+                    <Field label="Eyebrow" value={act.eyebrow} onChange={(value) => setContent((current) => ({ ...current, acts: current.acts.map((item, i) => i === index ? { ...item, eyebrow: value } : item) }))} />
+                    <Field label="ชื่อบท" value={act.title} onChange={(value) => setContent((current) => ({ ...current, acts: current.acts.map((item, i) => i === index ? { ...item, title: value } : item) }))} />
+                  </div>
+                  <Field label="คำอธิบาย" value={act.description} onChange={(value) => setContent((current) => ({ ...current, acts: current.acts.map((item, i) => i === index ? { ...item, description: value } : item) }))} multiline />
+                  <label className="admin-field">
+                    <span>ธีม</span>
+                    <select value={act.theme} onChange={(event) => setContent((current) => ({ ...current, acts: current.acts.map((item, i) => i === index ? { ...item, theme: event.target.value as typeof act.theme } : item) }))}>
+                      <option value="garden">Garden</option>
+                      <option value="ocean">Ocean</option>
+                      <option value="secret">Secret</option>
+                    </select>
+                  </label>
+                </div>
+              ))}
+              <button className="admin-primary-button" disabled={busy} onClick={() => void saveContent()}>บันทึก Act Cards</button>
+            </Panel>
+          ) : null}
+
           {activeTab === "story" ? (
             <Panel title="Timeline ของเรา" description="ใส่วันที่ ชื่อเหตุการณ์ และเรื่องเล่าของแต่ละช่วงเวลา">
               {content.storyMoments.map((moment, index) => (
@@ -551,9 +698,14 @@ export function AdminConsole() {
                   <Field label="วันที่" value={moment.date} onChange={(value) => setContent((current) => ({ ...current, storyMoments: current.storyMoments.map((item, itemIndex) => itemIndex === index ? { ...item, date: value } : item) }))} />
                   <Field label="หัวข้อความทรงจำ" value={moment.title} onChange={(value) => setContent((current) => ({ ...current, storyMoments: current.storyMoments.map((item, itemIndex) => itemIndex === index ? { ...item, title: value } : item) }))} />
                   <Field label="เรื่องราว" value={moment.description} onChange={(value) => setContent((current) => ({ ...current, storyMoments: current.storyMoments.map((item, itemIndex) => itemIndex === index ? { ...item, description: value } : item) }))} multiline />
+                  <Field label="ป้ายบท" value={moment.chapter} onChange={(value) => setContent((current) => ({ ...current, storyMoments: current.storyMoments.map((item, itemIndex) => itemIndex === index ? { ...item, chapter: value } : item) }))} />
+                  <button className="admin-remove-button" type="button" onClick={() => setContent((current) => ({ ...current, storyMoments: current.storyMoments.filter((_, i) => i !== index) }))}>ลบเหตุการณ์นี้</button>
                 </div>
               ))}
-              <button className="admin-primary-button" disabled={busy} onClick={() => void saveContent()}>บันทึก Timeline</button>
+              <div className="admin-button-row">
+                <button className="admin-secondary-button" type="button" onClick={() => setContent((current) => ({ ...current, storyMoments: [...current.storyMoments, { date: "", title: "", description: "", chapter: String(current.storyMoments.length + 1).padStart(2, "0") + " / NEW MOMENT" }] }))}>+ เพิ่มเหตุการณ์</button>
+                <button className="admin-primary-button" disabled={busy} onClick={() => void saveContent()}>บันทึก Timeline</button>
+              </div>
             </Panel>
           ) : null}
 
@@ -569,6 +721,71 @@ export function AdminConsole() {
               <Field label="หัวข้อบรรทัดรอง" value={content.letter.titleAccent} onChange={(value) => updateLetter("titleAccent", value)} />
               <Field label="เนื้อหาจดหมาย (เว้นบรรทัดเพื่อขึ้นย่อหน้าใหม่)" value={content.letter.paragraphs.join("\n\n")} onChange={(value) => updateLetter("paragraphs", value.split(/\n\s*\n/).filter(Boolean))} multiline />
               <button className="admin-primary-button" disabled={busy} onClick={() => void saveContent()}>บันทึกจดหมาย</button>
+            </Panel>
+          ) : null}
+
+          {activeTab === "mixtape" ? (
+            <Panel title="Mixtape Studio" description="จัดปกเทป รายชื่อเพลง ฝั่ง A/B และข้อความความทรงจำ เพลงจะถูกเก็บออนไลน์ใน Supabase Storage">
+              <div className="admin-form-grid">
+                <Field label="Eyebrow" value={content.mixtape.eyebrow} onChange={(value) => updateMixtape("eyebrow", value)} />
+                <Field label="ข้อความบนตัวเทป" value={content.mixtape.tapeLabel} onChange={(value) => updateMixtape("tapeLabel", value)} />
+                <Field label="หัวเรื่อง" value={content.mixtape.title} onChange={(value) => updateMixtape("title", value)} />
+                <Field label="หัวเรื่องบรรทัดรอง" value={content.mixtape.titleAccent} onChange={(value) => updateMixtape("titleAccent", value)} />
+              </div>
+              <Field label="คำโปรย Mixtape" value={content.mixtape.description} onChange={(value) => updateMixtape("description", value)} multiline />
+              <Field label="ข้อความคั่นระหว่างเพลง" value={content.mixtape.quote} onChange={(value) => updateMixtape("quote", value)} multiline />
+              <Field label="เครดิตข้อความ" value={content.mixtape.quoteAttribution} onChange={(value) => updateMixtape("quoteAttribution", value)} />
+              <label className="admin-upload-field">
+                <span>ภาพปก Mixtape (JPG, PNG, WebP หรือ GIF · ไม่เกิน 20 MB)</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={busy} onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void uploadMixtapeCover(file);
+                  event.target.value = "";
+                }} />
+              </label>
+              {content.mixtape.coverImagePath ? <small>มีไฟล์ภาพปกที่อัปโหลดแล้ว: {content.mixtape.coverImagePath.split("/").pop()}</small> : <small>ยังไม่ได้อัปโหลดภาพปก</small>}
+
+              <div className="admin-panel-heading" style={{ marginTop: 30 }}>
+                <h2>รายชื่อเพลง</h2>
+                <p>ไฟล์เสียงจะคงอยู่หลังรีเฟรชและเปิดได้จากอุปกรณ์อื่นเมื่อเผยแพร่แล้ว</p>
+              </div>
+              {content.mixtape.tracks.map((track, index) => (
+                <div className="admin-repeat-card" key={track.id}>
+                  <div className="admin-card-heading">
+                    <span className="admin-card-index">TRACK {String(index + 1).padStart(2, "0")}</span>
+                    <div className="admin-track-actions">
+                      <button className="admin-remove-button" type="button" disabled={index === 0} onClick={() => moveMixtapeTrack(track.id, -1)} aria-label="Move track up">↑</button>
+                      <button className="admin-remove-button" type="button" disabled={index === content.mixtape.tracks.length - 1} onClick={() => moveMixtapeTrack(track.id, 1)} aria-label="Move track down">↓</button>
+                      <button className="admin-remove-button" type="button" onClick={() => removeMixtapeTrack(track.id)}>ลบเพลง</button>
+                    </div>
+                  </div>
+                  <div className="admin-form-grid">
+                    <Field label="ชื่อเพลง" value={track.title} onChange={(value) => updateMixtapeTrack(track.id, { title: value })} />
+                    <Field label="ศิลปิน" value={track.artist} onChange={(value) => updateMixtapeTrack(track.id, { artist: value })} />
+                  </div>
+                  <Field label="เหตุผลที่เลือกเพลงนี้ / ความทรงจำ" value={track.note} onChange={(value) => updateMixtapeTrack(track.id, { note: value })} multiline />
+                  <label className="admin-field">
+                    <span>ฝั่งของเทป</span>
+                    <select value={track.side} onChange={(event) => updateMixtapeTrack(track.id, { side: event.target.value as "A" | "B" })}>
+                      <option value="A">Side A</option>
+                      <option value="B">Side B</option>
+                    </select>
+                  </label>
+                  <label className="admin-upload-field">
+                    <span>ไฟล์เพลง (MP3, M4A/MP4, WAV, OGG · ไม่เกิน 24 MB)</span>
+                    <input type="file" accept="audio/mpeg,audio/mp4,audio/wav,audio/ogg" disabled={busy} onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) void uploadMixtapeAudio(track.id, file);
+                      event.target.value = "";
+                    }} />
+                  </label>
+                  <small>{track.fileName || "ยังไม่ได้อัปโหลดไฟล์เพลง"}</small>
+                </div>
+              ))}
+              <div className="admin-button-row">
+                <button className="admin-secondary-button" type="button" onClick={addMixtapeTrack}>+ เพิ่มเพลง</button>
+                <button className="admin-primary-button" disabled={busy} onClick={() => void saveContent()}>บันทึก Mixtape ออนไลน์</button>
+              </div>
             </Panel>
           ) : null}
 
