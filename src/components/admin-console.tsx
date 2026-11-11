@@ -451,7 +451,6 @@ export function AdminConsole() {
     setStatus("กำลังอัปโหลดเพลงไปยัง Supabase Storage...");
     const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "").toLowerCase() || "mp3";
     const path = `mixtape/${session.user.id}/${trackId}.${extension}`;
-    const previousPath = content.mixtape.tracks.find((track) => track.id === trackId)?.storagePath;
     const { error } = await client.storage.from("project-2912-media").upload(path, file, {
       upsert: true,
       contentType: file.type,
@@ -462,9 +461,6 @@ export function AdminConsole() {
       setStatus("อัปโหลดเพลงไม่สำเร็จ: " + error.message);
       return;
     }
-    if (previousPath && previousPath !== path) {
-      await client.storage.from("project-2912-media").remove([previousPath]);
-    }
     updateMixtapeTrack(trackId, { storagePath: path, fileName: file.name });
     setBusy(false);
     setStatus("อัปโหลดเพลงแล้ว · กดบันทึก Mixtape เพื่อเผยแพร่รายการเพลง");
@@ -472,15 +468,15 @@ export function AdminConsole() {
 
   const uploadMixtapeCover = async (file: File) => {
     if (!client || !session?.user.id) return;
-    if (!file.type.startsWith("image/") || file.size > 20 * 1024 * 1024) {
-      setStatus("ปกเทปรองรับไฟล์ภาพขนาดไม่เกิน 20 MB");
+    const acceptedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+    if (!acceptedTypes.has(file.type) || file.size > 20 * 1024 * 1024) {
+      setStatus("ปกเทปรองรับ JPG, PNG, WebP หรือ GIF ขนาดไม่เกิน 20 MB");
       return;
     }
     setBusy(true);
     setStatus("กำลังอัปโหลดปก Mixtape...");
     const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
     const path = `mixtape/${session.user.id}/cover.${extension}`;
-    const previousPath = content.mixtape.coverImagePath;
     const { error } = await client.storage.from("project-2912-media").upload(path, file, {
       upsert: true,
       contentType: file.type,
@@ -490,9 +486,6 @@ export function AdminConsole() {
       setBusy(false);
       setStatus("อัปโหลดปกไม่สำเร็จ: " + error.message);
       return;
-    }
-    if (previousPath && previousPath !== path) {
-      await client.storage.from("project-2912-media").remove([previousPath]);
     }
     updateMixtape("coverImagePath", path);
     setBusy(false);
