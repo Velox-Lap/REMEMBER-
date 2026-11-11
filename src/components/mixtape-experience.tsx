@@ -270,6 +270,7 @@ export function MixtapeExperience() {
         </div>
       </div>
       <audio
+        hidden
         ref={audioRef}
         preload="metadata"
         onPlay={() => setPlaying(true)}
