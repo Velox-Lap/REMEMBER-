@@ -33,17 +33,18 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] Check narrow screens for clipping and overlap.
 
 ## Mixtape
-- [ ] Confirm placeholder tracks appear on both sides.
-- [ ] Switch between Side A and Side B.
-- [ ] Add one supported audio file and confirm its side and title.
-- [ ] Add multiple files and confirm order and side assignment.
+- [ ] Confirm the public player loads persisted tracks from the published Mixtape content.
+- [ ] Switch between Side A and Side B; confirm each side shows only its assigned tracks.
 - [ ] Play, pause, seek, skip forward/back, and allow a track to end.
 - [ ] Switch sides during playback; confirm the previous track stops.
-- [ ] Try a non-audio file; confirm an accessible error message appears.
-- [ ] Try an audio file over the 100 MB per-file limit; confirm rejection.
-- [ ] Confirm controls work with keyboard navigation.
-- [ ] Confirm files are not uploaded to a server.
-- [ ] Refresh; confirm the UI accurately reflects session-only storage.
+- [ ] Confirm the artist and personal note match the selected track.
+- [ ] Confirm empty sides show a calm empty state and disabled playback controls.
+- [ ] In Admin Studio, upload a supported MP3, M4A/MP4, WAV, or OGG file up to 24 MB.
+- [ ] Save Mixtape content; confirm the file path and track metadata are published together.
+- [ ] Refresh the public page and open it on another device; confirm the same uploaded track still plays.
+- [ ] Upload a new file over an existing track; confirm the previous published track remains intact until the new content is saved.
+- [ ] Confirm the public player has no upload controls and only Admin can upload media.
+- [ ] Confirm controls work with keyboard navigation and reduced-motion settings.
 
 ## Secret garden and finale
 - [ ] Reveal every flower and confirm each note appears once.
@@ -62,7 +63,13 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] No horizontal overflow at the listed viewport widths.
 - [ ] No visible content is obscured by fixed-position controls.
 - [ ] Personal photos, final copy, and intended audio are supplied and reviewed.
+- [ ] Admin owner email is allowlisted and magic-link login is tested.
+- [ ] Supabase Auth redirect URLs include the intended Vercel domains.
+- [ ] Public media uploads contain only files approved for sharing.
 - [ ] Owner explicitly approves merging and Production release.
 
-## Known limitation
-Mixtape audio uses browser object URLs and is session-only. Files are not stored on a server and must be selected again after a refresh or new browser session.
+## Known limitations
+- Mixtape files are stored in the public `project-2912-media` bucket because the published gift must be playable without a login. Only upload media intended to be shared with the gift recipient; do not upload confidential photos or private recordings.
+- Audio uploads are limited to 24 MB per track to remain below the Storage bucket's 25 MiB limit.
+- Audio and cover uploads are stored immediately, but the public page starts using new media only after the Admin saves the Mixtape content. Replacing or removing tracks may leave old Storage objects behind; cleanup can be performed after confirming the new version is published.
+- Admin login requires a confirmed email present in the private allowlist, followed by the Admin PIN. The allowlist is intentionally empty until the owner provides the exact email address.
