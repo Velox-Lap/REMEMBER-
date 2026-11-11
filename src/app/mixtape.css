@@ -171,3 +171,21 @@
   outline: 2px solid #d8e2cf;
   outline-offset: 3px;
 }
+
+
+/* Persistent mixtape artwork and personal track notes */
+.mixtape-cover-image {
+  display: block;
+  width: min(100%, 420px);
+  max-height: 180px;
+  margin: 0 auto 16px;
+  border: 1px solid rgba(65, 81, 64, .18);
+  object-fit: cover;
+  aspect-ratio: 16 / 7;
+}
+.mixtape-track-note {
+  min-height: 2.4em;
+  margin: 8px 0 17px;
+  color: #788276;
+  font: italic 15px/1.65 var(--font-cormorant), Georgia, serif;
+}
