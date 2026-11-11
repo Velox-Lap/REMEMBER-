@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type ReactNode, type FormEvent } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -373,7 +374,7 @@ export function AdminConsole() {
     return (
       <main className="admin-page">
         <div className="admin-auth-card">
-          <a className="admin-back" href="/">← กลับสู่เว็บไซต์</a>
+          <Link className="admin-back" href="/">← กลับสู่เว็บไซต์</Link>
           <span className="admin-eyebrow">PROJECT 29.12 · PRIVATE STUDIO</span>
           <h1>เข้าสู่พื้นที่<br /><em>ของผู้ดูแล</em></h1>
           <p>ระบบจะส่งลิงก์ยืนยันตัวตนไปยังอีเมลที่ได้รับอนุญาตเท่านั้น</p>
@@ -397,7 +398,7 @@ export function AdminConsole() {
     return (
       <main className="admin-page">
         <div className="admin-auth-card">
-          <a className="admin-back" href="/">← กลับสู่เว็บไซต์</a>
+          <Link className="admin-back" href="/">← กลับสู่เว็บไซต์</Link>
           <span className="admin-eyebrow">ACCOUNT VERIFIED</span>
           <h1>บัญชียังไม่มี<br /><em>สิทธิ์ผู้ดูแล</em></h1>
           <p>เข้าสู่ระบบด้วย {session.user.email ?? "บัญชีนี้"} สำเร็จ แต่ยังไม่มีสิทธิ์ project_2912_admin จึงไม่สามารถแก้ไขข้อมูลได้</p>
@@ -416,7 +417,7 @@ export function AdminConsole() {
     return (
       <main className="admin-page">
         <div className="admin-auth-card">
-          <a className="admin-back" href="/">← กลับสู่เว็บไซต์</a>
+          <Link className="admin-back" href="/">← กลับสู่เว็บไซต์</Link>
           <span className="admin-eyebrow">SECOND SECURITY LAYER</span>
           <h1>ปลดล็อก<br /><em>Admin Studio</em></h1>
           <p>ยืนยันรหัส 4 หลักเพิ่มเติมเพื่อเข้าสู่ระบบแก้ไข</p>
@@ -450,7 +451,7 @@ export function AdminConsole() {
   return (
     <main className="admin-page admin-page--workspace">
       <header className="admin-topbar">
-        <a href="/" className="admin-brand">PROJECT <strong>29.12</strong><span>ADMIN STUDIO</span></a>
+        <Link href="/" className="admin-brand">PROJECT <strong>29.12</strong><span>ADMIN STUDIO</span></Link>
         <div className="admin-account">
           <span>{session.user.email}</span>
           <button className="admin-secondary-button" onClick={() => void logout()}>ล็อกเอาต์</button>
