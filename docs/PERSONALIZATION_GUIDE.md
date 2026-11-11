@@ -12,7 +12,7 @@ Avoid private details that the recipient would not want published or stored in a
 
 ## 2. Replace content in one source of truth
 - `src/content/site.ts`: recipient name, opening subtitle, project title, footer note.
-- `src/content/memories.ts`: chronological story moments and six memory cards.
+- `src/content/memories.ts`: chronological story moments. The public Gallery stays hidden until real memory items are added through Admin Studio.
 - `src/content/letter.ts`: recipient, letter paragraphs, closing, signature, date.
 - `src/content/ocean.ts`: three ocean memories and the chapter's connecting text.
 - `src/content/secret.ts`: three flower notes and the final reveal.
@@ -37,7 +37,8 @@ Each chapter should add a new piece of information. Avoid repeating the same sen
 - Prefer 6–10 carefully selected images over many filler images.
 - Use consistent crops and provide meaningful alt text when images are added.
 - Use audio files that the recipient is allowed to receive and play.
-- Explain that the current mixtape player keeps selected audio only in the browser session.
+- Upload audio and cover artwork from the Admin Studio Mixtape tab. Tracks and media paths are stored online in Supabase so the recipient can play the same soundtrack after refresh and on another device.
+- The media bucket is public by design for recipient playback; only upload media intended to be shared with the gift recipient.
 
 ## 5. Final review questions
 - Could the recipient identify at least three memories without being told what they mean?
@@ -46,6 +47,8 @@ Each chapter should add a new piece of information. Avoid repeating the same sen
 - Is the reveal kind and appropriate, with no pressure or expectation attached?
 - Are all names, dates, images, and permissions correct?
 - Are all bracketed placeholders removed?
+- Does the public Gallery contain only real photographs, not decorative filler cards?
+- Does every Mixtape track have its artist and a personal reason for being included?
 
 ## Release rule
 Do not merge or publish until the content owner has reviewed every personal detail and approved the final recipient-facing experience.
