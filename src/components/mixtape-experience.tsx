@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import type { ProjectMixtape, ProjectMixtapeTrack } from "@/lib/project-2912-content";
 
 type TapeTrack = ProjectMixtapeTrack & { src: string | null };
@@ -127,7 +128,7 @@ export function MixtapeExperience({ content }: { content: ProjectMixtape }) {
               <span>PERSONAL MIXTAPE · NO. 01</span>
             </div>
             {coverImageUrl ? (
-              <img className="mixtape-cover-image" src={coverImageUrl} alt="Mixtape cover artwork" loading="lazy" />
+              <Image className="mixtape-cover-image" src={coverImageUrl} alt="Mixtape cover artwork" width={840} height={368} unoptimized loading="lazy" />
             ) : null}
             <div className="cassette-shell">
               <div className="cassette-label">
