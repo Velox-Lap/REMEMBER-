@@ -65,7 +65,14 @@ export type ProjectSecret = {
   replayLabel: string;
 };
 
-export type ProjectCheckpoint = {\n  question_key: "first_meeting" | "first_trip" | "first_24_hours";\n  prompt: string;\n  sort_order: number;\n};\n\nexport type ProjectContent = {\n  checkpoints: ProjectCheckpoint[];
+export type ProjectCheckpoint = {
+  question_key: "first_meeting" | "first_trip" | "first_24_hours";
+  prompt: string;
+  sort_order: number;
+};
+
+export type ProjectContent = {
+  checkpoints: ProjectCheckpoint[];
   site: {
     title: string;
     concept: string;
