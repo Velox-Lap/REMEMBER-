@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { letterContent } from "@/content/letter";
+import type { ProjectContent } from "@/lib/project-2912-content";
 
-export function LetterExperience() {
+export function LetterExperience({ content: letterContent }: { content: ProjectContent["letter"] }) {
   const [isOpen, setIsOpen] = useState(false);
   const reduceMotion = useReducedMotion();
 
