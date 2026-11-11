@@ -123,10 +123,13 @@ export function AdminConsole() {
     void client.auth.getSession().then(({ data }) => {
       if (active) setSession(data.session);
     });
-    const { data } = client.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = client.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
-      setUnlocked(false);
-      setPin("");
+      if (event === "SIGNED_OUT" || event === "USER_UPDATED") {
+        setUnlocked(false);
+        setPin("");
+        setPinExpiresAt(null);
+      }
     });
     return () => {
       active = false;
