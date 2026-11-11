@@ -56,7 +56,7 @@ export default async function HomePage() {
         </section>
 
         <LetterExperience content={content.letter} />
-        <MixtapeExperience />
+        <MixtapeExperience content={content.mixtape} />
         <OceanExperience content={content.ocean} />
         <SecretReveal content={content.secret} questions={content.checkpoints} />
 
