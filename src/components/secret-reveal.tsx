@@ -90,7 +90,7 @@ export function SecretReveal() {
               disabled={revealed.length !== secretContent.flowers.length}
             >
               <span>THE LAST LITTLE SECRET</span>
-              <strong>{revealed.length === secretContent.flowers.length ? "Open the final chapter" : "Find all {secretContent.flowers.length} flowers first"} <i aria-hidden="true">↗</i></strong>
+              <strong>{revealed.length === secretContent.flowers.length ? "Open the final chapter" : `Find all ${secretContent.flowers.length} flowers first`} <i aria-hidden="true">↗</i></strong>
             </button>
           ) : (
             <div className="final-reveal-card" role="status">
