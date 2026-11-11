@@ -154,7 +154,7 @@ export async function getProjectContent(): Promise<ProjectContent> {
   if (!url || !key) return defaultProjectContent;
 
   try {
-    const headers = { apikey: key, Authorization: `Bearer ${key}` };
+    const headers = { apikey: key };
     const [contentResponse, memoryResponse, questionResponse] = await Promise.all([
       fetch(`${url}/rest/v1/project_2912_content?id=eq.main&select=payload&is_published=eq.true&limit=1`, {
         headers,
