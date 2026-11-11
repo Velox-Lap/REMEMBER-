@@ -105,7 +105,7 @@ export function AdminConsole() {
   const [session, setSession] = useState<Session | null>(null);
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);\n  const [pinExpiresAt, setPinExpiresAt] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [content, setContent] = useState<ProjectContent>(defaultProjectContent);
   const [gallery, setGallery] = useState<ProjectMemory[]>([]);
@@ -132,6 +132,17 @@ export function AdminConsole() {
       data.subscription.unsubscribe();
     };
   }, [client]);
+
+  useEffect(() => {
+    if (!unlocked || !pinExpiresAt) return;
+    const timeout = window.setTimeout(() => {
+      setUnlocked(false);
+      setPin("");
+      setPinExpiresAt(null);
+      setStatus("หมดเวลาปลดล็อก 15 นาทีแล้ว กรุณากรอกรหัส Admin PIN อีกครั้ง");
+    }, Math.max(0, pinExpiresAt * 1000 - Date.now()));
+    return () => window.clearTimeout(timeout);
+  }, [unlocked, pinExpiresAt]);
 
   const isAdminAccount = session?.user.app_metadata?.project_2912_admin === true;
 
@@ -227,8 +238,16 @@ export function AdminConsole() {
       setStatus("รหัสไม่ถูกต้อง หรือเกินจำนวนครั้งที่อนุญาต");
       return;
     }
+    const { data: refreshed, error: refreshError } = await client.auth.refreshSession();
+    if (refreshError || !refreshed.session) {
+      setBusy(false);
+      setStatus("ตรวจ PIN ผ่านแล้ว แต่โหลดสิทธิ์แก้ไขใหม่ไม่สำเร็จ กรุณาออกจากระบบแล้วเข้าสู่ระบบอีกครั้ง");
+      return;
+    }
+    setSession(refreshed.session);
+    setPinExpiresAt(typeof data?.expiresAt === "number" ? data.expiresAt : Math.floor(Date.now() / 1000) + 900);
     setUnlocked(true);
-    setStatus("ปลดล็อกโหมดแก้ไขสำเร็จ");
+    setStatus("ปลดล็อกสำเร็จ · สิทธิ์แก้ไขจะหมดอายุใน 15 นาที");
   };
 
   const saveContent = async () => {
