@@ -217,3 +217,8 @@ html { scroll-padding-top: 104px; }
 @media (max-width: 760px) {
   .final-chapter { min-height: 76vh; padding-block: 100px; }
 }
+
+
+.final-chapter-eyebrow {
+  margin: 0;
+}
