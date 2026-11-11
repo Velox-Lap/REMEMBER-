@@ -58,7 +58,7 @@ export default async function HomePage() {
         <LetterExperience content={content.letter} />
         <MixtapeExperience />
         <OceanExperience content={content.ocean} />
-        <SecretReveal content={content.secret} />
+        <SecretReveal content={content.secret} questions={content.checkpoints} />
 
         <footer className="site-footer" id="footer">
           <span>{content.site.footerNote}</span>
