@@ -1,5 +1,5 @@
 export const secretContent = {
-  eyebrow: "ACT III · THE SECRET GARDEN",
+  eyebrow: "CHAPTER 08 — THE SECRET GARDEN",
   title: "Some things bloom\nin their own time.",
   description:
     "A quiet place for the little things waiting to be discovered. Choose a flower to reveal its note.",

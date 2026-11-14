@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUp, Compass } from "lucide-react";
 
@@ -22,6 +22,9 @@ export function ExperienceNavigation() {
   const [transitioning, setTransitioning] = useState(false);
   const [targetLabel, setTargetLabel] = useState("");
   const reduceMotion = useReducedMotion();
+  const transitionTimerRef = useRef<number | null>(null);
+  const scrollTimerRef = useRef<number | null>(null);
+  const scrollEndHandlerRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const sections = chapters
@@ -39,28 +42,64 @@ export function ExperienceNavigation() {
     );
 
     sections.forEach((section) => observer.observe(section));
-    const onScroll = () => setShowTop(window.scrollY > 520);
+    const onScroll = () => {
+      const scrollableHeight = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const distanceToBottom = scrollableHeight - window.scrollY;
+      // Keep the floating control away from footer copy and final actions.
+      setShowTop(window.scrollY > 520 && distanceToBottom > 160);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", onScroll);
+      if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
+      if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+      if (scrollEndHandlerRef.current) {
+        window.removeEventListener("scrollend", scrollEndHandlerRef.current);
+        scrollEndHandlerRef.current = null;
+      }
     };
   }, []);
 
   const navigateTo = (id: string, label: string) => {
     const target = document.getElementById(id);
     if (!target) return;
+
+    if (transitionTimerRef.current !== null) window.clearTimeout(transitionTimerRef.current);
+    if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+    if (scrollEndHandlerRef.current) {
+      window.removeEventListener("scrollend", scrollEndHandlerRef.current);
+      scrollEndHandlerRef.current = null;
+    }
     setTargetLabel(label);
+    setActiveChapter(id);
+
     if (reduceMotion) {
       target.scrollIntoView({ behavior: "auto", block: "start" });
       return;
     }
+
     setTransitioning(true);
-    window.setTimeout(() => {
+    transitionTimerRef.current = window.setTimeout(() => {
+      const finishTransition = () => {
+        if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+        if (scrollEndHandlerRef.current) {
+          window.removeEventListener("scrollend", scrollEndHandlerRef.current);
+          scrollEndHandlerRef.current = null;
+        }
+        transitionTimerRef.current = null;
+        scrollTimerRef.current = null;
+        setTransitioning(false);
+      };
+      scrollEndHandlerRef.current = finishTransition;
+      window.addEventListener("scrollend", finishTransition, { once: true });
       target.scrollIntoView({ behavior: "smooth", block: "start" });
-      window.setTimeout(() => setTransitioning(false), 720);
+      // scrollend is preferred; timeout is a fallback for browsers that do not emit it.
+      const distance = Math.abs(target.getBoundingClientRect().top);
+      const fallbackDelay = Math.min(1800, Math.max(700, distance / 3));
+      scrollTimerRef.current = window.setTimeout(finishTransition, fallbackDelay);
     }, 260);
   };
 
@@ -70,11 +109,11 @@ export function ExperienceNavigation() {
         <span className="chapter-rail-label">JOURNEY</span>
         {chapters.map((chapter) => (
           <button
-            className={`chapter-rail-link${activeChapter === chapter.id ? " is-active" : ""}`}
+            className={"chapter-rail-link" + (activeChapter === chapter.id ? " is-active" : "")}
             key={chapter.id}
             type="button"
             onClick={() => navigateTo(chapter.id, chapter.label)}
-            aria-label={`Go to chapter ${chapter.number}: ${chapter.label}`}
+            aria-label={"Go to chapter " + chapter.number + ": " + chapter.label}
             aria-current={activeChapter === chapter.id ? "location" : undefined}
           >
             <span className="chapter-rail-number">{chapter.number}</span>

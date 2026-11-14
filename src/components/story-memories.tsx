@@ -1,23 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { memoryItems, storyMoments, type MemoryItem } from "@/content/memories";
+import type { ProjectContent, ProjectMemory } from "@/lib/project-2912-content";
 
-function MemoryArtwork({ tone }: { tone: MemoryItem["tone"] }) {
+function MemoryArtwork({ tone, imageUrl }: { tone: ProjectMemory["tone"]; imageUrl?: string | null }) {
   return (
     <div className={`memory-art memory-art--${tone}`} aria-hidden="true">
+      {imageUrl ? <Image src={imageUrl} alt="" fill unoptimized sizes="(max-width: 700px) 90vw, 420px" className="memory-art-photo" /> : null}
       <span className="memory-art-orbit" />
       <span className="memory-art-shape memory-art-shape--one" />
       <span className="memory-art-shape memory-art-shape--two" />
       <span className="memory-art-stamp">29.12</span>
-      <span className="memory-art-placeholder">YOUR PHOTO HERE</span>
+      {imageUrl ? null : <span className="memory-art-placeholder">YOUR PHOTO HERE</span>}
     </div>
   );
 }
 
-export function StoryMemories() {
-  const [selectedMemory, setSelectedMemory] = useState<MemoryItem | null>(null);
+export function StoryMemories({ storyMoments, memoryItems }: { storyMoments: ProjectContent["storyMoments"]; memoryItems: ProjectContent["memoryItems"] }) {
+  const [selectedMemory, setSelectedMemory] = useState<ProjectMemory | null>(null);
   const reduceMotion = useReducedMotion();
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -73,7 +75,7 @@ export function StoryMemories() {
         <div className="story-shell">
           <div className="story-heading">
             <div>
-              <span className="eyebrow">CHAPTER 02 — THE STORY</span>
+              <span className="eyebrow">CHAPTER 03 — THE STORY</span>
               <h2 id="story-title">Little moments,<br /><em>along the way.</em></h2>
             </div>
             <p>Not every important moment is loud. Some simply find a place to stay.</p>
@@ -103,10 +105,11 @@ export function StoryMemories() {
         </div>
       </section>
 
+      {memoryItems.length > 0 ? (
       <section className="memories-section" id="memories" aria-labelledby="memories-title">
         <div className="memories-shell">
           <div className="memories-heading">
-            <span className="eyebrow">A SCRAPBOOK OF US</span>
+            <span className="eyebrow">CHAPTER 04 — A SCRAPBOOK OF US</span>
             <h2 id="memories-title">Collected <em>memories.</em></h2>
             <p>Six little frames, ready for photographs and the stories behind them.</p>
           </div>
@@ -122,7 +125,7 @@ export function StoryMemories() {
                 whileTap={reduceMotion ? undefined : { scale: 0.985 }}
                 aria-label={`Open memory: ${memory.title}`}
               >
-                <MemoryArtwork tone={memory.tone} />
+                <MemoryArtwork tone={memory.tone} imageUrl={memory.imageUrl} />
                 <span className="memory-card-copy">
                   <span className="memory-card-date">{memory.date}</span>
                   <span className="memory-card-title">{memory.title}</span>
@@ -132,9 +135,10 @@ export function StoryMemories() {
               </motion.button>
             ))}
           </div>
-          <p className="memories-footnote">Replace each illustrated frame with a photograph from your own collection.</p>
+          <p className="memories-footnote">A small collection of moments worth keeping.</p>
         </div>
       </section>
+      ) : null}
 
       <AnimatePresence>
         {selectedMemory && (
@@ -162,7 +166,7 @@ export function StoryMemories() {
               transition={{ duration: reduceMotion ? 0 : 0.25 }}
             >
               <button ref={closeButtonRef} className="lightbox-close" type="button" onClick={() => setSelectedMemory(null)} aria-label="Close memory viewer">×</button>
-              <MemoryArtwork tone={selectedMemory.tone} />
+              <MemoryArtwork tone={selectedMemory.tone} imageUrl={selectedMemory.imageUrl} />
               <div className="lightbox-copy">
                 <span className="eyebrow">{selectedMemory.date}</span>
                 <h3 id="lightbox-title">{selectedMemory.title}</h3>

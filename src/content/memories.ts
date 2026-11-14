@@ -15,28 +15,28 @@ export type MemoryItem = {
 
 export const storyMoments: StoryMoment[] = [
   {
-    date: "[A DATE TO REMEMBER]",
-    title: "The beginning",
-    description: "Add a few words about how this chapter of your story began.",
-    chapter: "01 / BEGINNING",
+    date: "03/07/2025",
+    title: "วันแรกที่เราเจอกัน",
+    description: "วันเริ่มต้นของเรื่องราวที่ค่อย ๆ กลายเป็นความทรงจำของเรา",
+    chapter: "01 / THE BEGINNING",
   },
   {
-    date: "[A DAY YOU BOTH REMEMBER]",
-    title: "A little moment",
-    description: "Describe a small moment that became important to you.",
-    chapter: "02 / A MOMENT",
+    date: "02/08/2026",
+    title: "วันแรกที่เราได้อยู่ด้วยกัน 24 ชั่วโมง",
+    description: "วันแรกที่เราได้ใช้เวลาร่วมกันครบหนึ่งวันเต็ม ๆ",
+    chapter: "02 / 24 HOURS TOGETHER",
   },
   {
-    date: "[A SPECIAL DATE]",
-    title: "Somewhere along the way",
-    description: "Write about a place, conversation, or experience worth keeping.",
-    chapter: "03 / ALONG THE WAY",
+    date: "19/09/2026",
+    title: "วันแรกที่เราไปเที่ยวด้วยกัน",
+    description: "การเดินทางครั้งแรกของเราที่มีเรื่องราวให้เก็บกลับมา",
+    chapter: "03 / OUR FIRST TRIP",
   },
   {
-    date: "[THE PRESENT]",
-    title: "Still unfolding",
-    description: "Leave this space for the next page of your shared story.",
-    chapter: "04 / TO BE CONTINUED",
+    date: "TO BE CONTINUED",
+    title: "เรื่องราวที่ยังเขียนต่อ",
+    description: "ยังมีวันธรรมดาและความทรงจำใหม่ ๆ รออยู่ข้างหน้า",
+    chapter: "04 / THE NEXT PAGE",
   },
 ];
 

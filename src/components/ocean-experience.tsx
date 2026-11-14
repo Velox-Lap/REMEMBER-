@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { oceanContent } from "@/content/ocean";
+import type { ProjectContent } from "@/lib/project-2912-content";
 
-export function OceanExperience() {
+export function OceanExperience({ content: oceanContent }: { content: ProjectContent["ocean"] }) {
   const reduceMotion = useReducedMotion();
 
   return (

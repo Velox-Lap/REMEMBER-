@@ -2,15 +2,18 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { SiteHeader } from "@/components/site-header";
-import { siteContent } from "@/content/site";
+import type { ProjectContent } from "@/lib/project-2912-content";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
 };
 
-export function CinematicIntro() {
+export function CinematicIntro({ site }: { site: ProjectContent["site"] }) {
   const reduceMotion = useReducedMotion();
+  const headlineLines = site.openingHeadline.split("\n");
+  const firstLine = headlineLines[0] ?? site.title;
+  const accentLine = headlineLines.slice(1).join(" ");
 
   return (
     <section className="intro-scene" id="intro" aria-labelledby="intro-title">
@@ -35,14 +38,15 @@ export function CinematicIntro() {
         >
           <p className="hero-overline">
             <span className="overline-line" />
-            AN EXPERIENCE MADE WITH CARE
+            {site.recipientName && !site.recipientName.includes("[")
+              ? `A LITTLE WORLD MADE FOR ${site.recipientName.toUpperCase()}`
+              : "AN EXPERIENCE MADE WITH CARE"}
           </p>
           <h1 id="intro-title">
-            A Little World,
-            <br />
-            <em>Just for You.</em>
+            {firstLine}
+            {accentLine ? <><br /><em>{accentLine}</em></> : null}
           </h1>
-          <p className="hero-description">{siteContent.openingSubtitle}</p>
+          <p className="hero-description">{site.openingSubtitle}</p>
           <motion.a
             className="enter-link"
             href="#garden"
@@ -50,7 +54,7 @@ export function CinematicIntro() {
             whileTap={reduceMotion ? undefined : { scale: 0.98 }}
           >
             <span className="enter-link-icon" aria-hidden="true">↘</span>
-            <span>{siteContent.enterLabel}</span>
+            <span>{site.enterLabel}</span>
           </motion.a>
         </motion.div>
 
