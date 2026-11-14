@@ -224,24 +224,23 @@ export async function getProjectContent(): Promise<ProjectContent> {
         event_date: string | null;
         image_path: string | null;
       }[];
-      if (memoryRows.length) {
-        content = {
-          ...content,
-          memoryItems: memoryRows.map((item, index) => ({
-            id: item.id,
-            title: item.title,
-            caption: item.caption,
-            date: item.event_date ?? "",
-            tone: (["sage", "sand", "blue", "moss"] as const)[index % 4],
-            imageUrl: item.image_path,
-          })),
-        };
-      }
+      content = {
+        ...content,
+        memoryItems: memoryRows.map((item, index) => ({
+          id: item.id,
+          title: item.title,
+          caption: item.caption,
+          date: item.event_date ?? "",
+          tone: (["sage", "sand", "blue", "moss"] as const)[index % 4],
+          imageUrl: item.image_path,
+        })),
+      };
     }
 
     if (questionResponse.ok) {
       const questions = await questionResponse.json() as ProjectCheckpoint[];
-      if (questions.length) content = { ...content, checkpoints: questions };
+      // An empty active-question result is intentional and must not resurrect defaults.
+      content = { ...content, checkpoints: questions };
     }
 
     return content;
