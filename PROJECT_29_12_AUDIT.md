@@ -256,3 +256,31 @@ No table rows, Admin allowlist entries, PIN hashes, checkpoint answers, media ob
 - Review the latest Preview and explicitly approve the Production release.
 
 **Release assessment:** The development branch is materially more complete than Production and has a clear path to release, but it is **not production-ready yet**. Critical release blockers are credential rotation/history handling, Admin onboarding, content initialization, and end-to-end browser QA.
+
+
+## 10. Security follow-up — 2026-11-14
+
+### SEC-005 — Admin PIN rotation added; owner action pending
+- Applied database migration `20261114124958_project_2912_rotate_admin_pin`.
+- Added `public.project_2912_rotate_admin_pin(text)`, which accepts only 6–12 numeric digits, stores a bcrypt hash, uses an empty search path, and requires the request JWT role to be `service_role`.
+- Verified effective function privileges: `anon` cannot execute; `authenticated` cannot execute; `service_role` can execute. The function is SECURITY DEFINER with `search_path=""`.
+- Deployed `project-2912-gateway` version 6 with the `rotate_admin_pin` action. It requires a confirmed Admin user, verifies the existing PIN through the rate-limited verifier, clears the active PIN-unlock claim, and invokes the service-role-only RPC. PIN values and hashes are neither logged nor returned.
+- Added a Security tab to Admin Studio. It validates a current PIN of 4–12 digits, a new PIN of 6–12 digits, and matching confirmation. The existing Admin unlock input now supports 4–12 digits.
+- Added owner-only instructions in `docs/OWNER_SETUP.md` and rotation test cases in `docs/QA_CHECKLIST.md`.
+- **Status:** IMPLEMENTED AT DATABASE / EDGE / UI LAYERS; OWNER ROTATION NOT YET PERFORMED. The Admin allowlist remains empty, so the owner must authorize an email, complete Magic Link login, unlock Admin, and rotate the PIN in-browser.
+
+### OPS-002 — Live migration source drift
+- The new migration was applied successfully to Supabase and its privileges were verified, but the GitHub tool rejected creation of the matching SQL file in the repository. The previous guest privilege migration remains tracked; this PIN-rotation migration currently exists in the hosted migration history but not as a corresponding repository SQL file.
+- The deployed Edge Function source is tracked at `supabase/functions/project-2912-gateway/index.ts`; `supabase/config.toml` now records `verify_jwt = false`, matching the live function configuration.
+- **Status:** PARTIALLY RESOLVED; repository migration reproducibility remains OPEN.
+
+### QA-002 — PIN rotation browser regression
+- The QA checklist now covers successful and rejected PIN rotation, input validation, rate limiting, clearing the prior unlock window, and the old/new PIN acceptance behavior.
+- **Status:** NOT RUN. Owner login is blocked by the empty Admin allowlist; Vercel sandbox creation also failed, so no independent local browser test environment was available.
+
+### Latest security advisor state
+- The new PIN-rotation RPC is not present in the Security Advisor's authenticated SECURITY DEFINER warning; direct function ACL checks show execution is restricted to `service_role`.
+- The remaining Security Advisor warnings are pre-existing: `public.accept_pair_code(text)` is executable by `authenticated`, and leaked-password protection is disabled. The pairing function belongs to another existing workflow and was not changed.
+- The existing performance advisor notices (unindexed foreign keys, RLS init-plan notices, and unused indexes) remain outside this change scope.
+
+**Release gate remains closed.** The actual PIN rotation, Admin email onboarding, Auth redirect configuration, leaked-password protection setting, browser QA, real owner-approved content, and explicit Production approval are still outstanding. No Production deployment, main-branch merge, or RNMCOM modification was performed.
