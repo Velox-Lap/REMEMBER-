@@ -166,8 +166,20 @@ An earlier CI run failed in Next.js `next/font/google` with a Google Font respon
 - Added `docs/OWNER_SETUP.md` in commit `23043013fc3b8c3bcd97a238d0e7fb004557da24`, with owner-only steps for PIN rotation, Admin allowlisting, Magic Link callbacks, leaked-password protection, history cleanup, and the release gate.
 - Preview for the Admin UI commit `24ce2d0e4ac8ca02f96df6aa8d415b9f982cc504` is READY: https://project-29-12-tt82ij4as-velox19.vercel.app. The subsequent documentation-only commit `23043013fc3b8c3bcd97a238d0e7fb004557da24` had a Preview deployment in BUILDING state at the last check.
 - **Owner-dependent:** the actual PIN has not yet been rotated because the Admin allowlist is empty. The owner must authorize an exact email, complete the Magic Link, unlock Admin, and perform the rotation in the browser. No PIN or email was entered by the agent.
-- **Repository reproducibility blocker:** the live migration was applied and verified, but GitHub rejected the attempt to create the matching SQL migration file. The deployed Edge Function source is also not yet tracked in the repository. Treat this as schema/source drift and do not claim the repository fully reproduces the current Supabase state.
+- **Repository reproducibility blocker:** the live migration was applied and verified, but GitHub rejected the attempt to create the matching SQL migration file. The deployed Edge Function v6 source is now tracked at `supabase/functions/project-2912-gateway/index.ts`, and `supabase/config.toml` records `verify_jwt = false`. The migration SQL source is the remaining schema drift; do not claim the repository fully reproduces the current Supabase state.
 - A Vercel sandbox could not be provisioned (HTTP 400 from the v2, v3, and v4 sandbox creation endpoints), so no local npm install, generated lockfile, lint, typecheck, or Playwright/browser run was performed in this step.
 - Security Advisor still reports the pre-existing `public.accept_pair_code(text)` SECURITY DEFINER function as executable by authenticated users and leaked-password protection as disabled. The unrelated pairing function was not modified. The new PIN rotation RPC does not appear in the Advisor finding; its direct execute ACL is restricted as recorded above.
 
 **Release status remains NOT PRODUCTION-READY.** Production, `main`, the RNMCOM project, Admin allowlist rows, PIN hashes, personal content, Gallery media, and audio media were not modified by this follow-up. No merge or Production promotion occurred.
+
+
+## 11. Preview build correction and final state — 2026-11-14
+
+- Adding the deployed Deno Edge Function source under `supabase/functions` initially caused Next.js TypeScript validation to include its `npm:` import and fail with `Cannot find module 'npm:@supabase/supabase-js@2'`.
+- Corrected `tsconfig.json` to exclude `supabase/functions` from the Next.js TypeScript project. The Supabase source remains tracked and deployable through Supabase tooling; it is not incorrectly treated as browser/server Next.js code.
+- Latest application code commit `57a2a83a9e8f53721b4025d92ff956660fef0a08` is READY on Vercel Preview: https://project-29-12-fu4hf3bze-velox19.vercel.app. Stable branch alias: https://project-29-12-git-chore-project-29-12-least-privilege-velox19.vercel.app.
+- Vercel deployment: `dpl_Cdbx6FhCvahAQ9aSpGL1xPEZN55t`; Vercel commit status: `success`. Build events show Next.js 15.5.29 compile succeeded, lint/type validation completed, static generation 4/4, and routes `/`, `/admin`, `/_not-found` were generated.
+- The deployment is still a Preview (`target: null`). It is not the Production alias and has not been promoted.
+- Local install and lockfile generation remain unavailable: outbound GitHub DNS was unavailable in the local container and Vercel sandbox creation returned HTTP 400 for v2/v3/v4. No lockfile or local Playwright/browser run is claimed.
+
+**Current release decision:** Preview build is healthy; application-level Admin/owner workflows remain NOT VERIFIED and Production remains NOT READY.
