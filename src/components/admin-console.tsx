@@ -340,9 +340,9 @@ export function AdminConsole() {
     }
     setBusy(true);
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const path = `memories/${session.user.id}/${memoryId}.${extension}`;
+    const path = `memories/${session.user.id}/${memoryId}/${crypto.randomUUID()}.${extension}`;
     const { error } = await client.storage.from("project-2912-media").upload(path, file, {
-      upsert: true,
+      upsert: false,
       contentType: file.type,
       cacheControl: "3600",
     });
@@ -448,9 +448,9 @@ export function AdminConsole() {
     setBusy(true);
     setStatus("กำลังอัปโหลดเพลงไปยัง Supabase Storage...");
     const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "").toLowerCase() || "mp3";
-    const path = `mixtape/${session.user.id}/${trackId}.${extension}`;
+    const path = `mixtape/${session.user.id}/${trackId}/${crypto.randomUUID()}.${extension}`;
     const { error } = await client.storage.from("project-2912-media").upload(path, file, {
-      upsert: true,
+      upsert: false,
       contentType: file.type,
       cacheControl: "3600",
     });
@@ -474,9 +474,9 @@ export function AdminConsole() {
     setBusy(true);
     setStatus("กำลังอัปโหลดปก Mixtape...");
     const extension = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
-    const path = `mixtape/${session.user.id}/cover.${extension}`;
+    const path = `mixtape/${session.user.id}/cover/${crypto.randomUUID()}.${extension}`;
     const { error } = await client.storage.from("project-2912-media").upload(path, file, {
-      upsert: true,
+      upsert: false,
       contentType: file.type,
       cacheControl: "3600",
     });
