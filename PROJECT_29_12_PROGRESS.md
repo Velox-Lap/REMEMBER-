@@ -155,3 +155,19 @@ An earlier CI run failed in Next.js `next/font/google` with a Google Font respon
 - The deployment build verifies the application source and type/lint stage; it does not exercise live user permissions or media operations.
 
 **Updated release assessment:** The database least-privilege change is VERIFIED, and the current working-branch Preview build is READY. The complete product remains NOT PRODUCTION-READY until credential rotation/history decision, Admin onboarding, owner-provided content, browser QA, migration-baseline reproducibility, and explicit release approval are complete.
+
+
+## 10. Security follow-up — 2026-11-14
+
+- Added the database migration `20261114124958_project_2912_rotate_admin_pin` to the live Supabase project. It creates `public.project_2912_rotate_admin_pin(text)`, validates numeric PINs of 6–12 digits, stores a bcrypt hash, uses an empty search path, and rejects calls unless the JWT role is `service_role`.
+- Post-migration ACL verification: `anon_can_execute=false`, `authenticated_can_execute=false`, `service_role_can_execute=true`; function metadata confirms `SECURITY DEFINER` with an empty `search_path`.
+- Deployed `project-2912-gateway` Edge Function version 6. The new `rotate_admin_pin` action requires a confirmed Admin account, verifies the current PIN through the existing rate-limited verifier, clears the active PIN-unlock claim, and calls the service-role-only hash-rotation RPC. PIN values and hashes are not logged or returned.
+- Added an Admin Studio **ความปลอดภัย** tab in commit `24ce2d0e4ac8ca02f96df6aa8d415b9f982cc504`. It allows the owner to enter their current PIN and set/confirm a new 6–12 digit PIN. The existing PIN field now accepts 4–12 digits to support the new PIN length.
+- Added `docs/OWNER_SETUP.md` in commit `23043013fc3b8c3bcd97a238d0e7fb004557da24`, with owner-only steps for PIN rotation, Admin allowlisting, Magic Link callbacks, leaked-password protection, history cleanup, and the release gate.
+- Preview for the Admin UI commit `24ce2d0e4ac8ca02f96df6aa8d415b9f982cc504` is READY: https://project-29-12-tt82ij4as-velox19.vercel.app. The subsequent documentation-only commit `23043013fc3b8c3bcd97a238d0e7fb004557da24` had a Preview deployment in BUILDING state at the last check.
+- **Owner-dependent:** the actual PIN has not yet been rotated because the Admin allowlist is empty. The owner must authorize an exact email, complete the Magic Link, unlock Admin, and perform the rotation in the browser. No PIN or email was entered by the agent.
+- **Repository reproducibility blocker:** the live migration was applied and verified, but GitHub rejected the attempt to create the matching SQL migration file. The deployed Edge Function source is also not yet tracked in the repository. Treat this as schema/source drift and do not claim the repository fully reproduces the current Supabase state.
+- A Vercel sandbox could not be provisioned (HTTP 400 from the v2, v3, and v4 sandbox creation endpoints), so no local npm install, generated lockfile, lint, typecheck, or Playwright/browser run was performed in this step.
+- Security Advisor still reports the pre-existing `public.accept_pair_code(text)` SECURITY DEFINER function as executable by authenticated users and leaked-password protection as disabled. The unrelated pairing function was not modified. The new PIN rotation RPC does not appear in the Advisor finding; its direct execute ACL is restricted as recorded above.
+
+**Release status remains NOT PRODUCTION-READY.** Production, `main`, the RNMCOM project, Admin allowlist rows, PIN hashes, personal content, Gallery media, and audio media were not modified by this follow-up. No merge or Production promotion occurred.
