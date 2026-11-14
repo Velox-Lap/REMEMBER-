@@ -8,7 +8,7 @@ This document records the remaining steps that require the project owner's own i
 - Working branch: `chore/project-29-12-least-privilege`
 - Supabase project: `zchqkhwprevcitfarkxa`
 - Vercel project: `project-29-12`
-- Current Preview under review: `https://project-29-12-o3pzwc4k4-velox19.vercel.app`
+- Current Preview under review: `https://project-29-12-git-chore-project-29-12-least-privilege-velox19.vercel.app` (stable branch alias; Vercel Deployment Protection may require your Vercel account)
 - Production alias: `https://project-29-12.vercel.app` (not changed by this work)
 
 ## 1. Rotate the previously exposed Admin PIN
@@ -47,7 +47,7 @@ In Supabase Dashboard for project `zchqkhwprevcitfarkxa`, inspect **Authenticati
 
 - Set the Site URL to the intended canonical site origin: `https://project-29-12.vercel.app`.
 - Add the exact callback URL `https://project-29-12.vercel.app/admin` to the allowed redirect URLs.
-- When signing in on the current Preview, also add the exact Preview callback `https://project-29-12-o3pzwc4k4-velox19.vercel.app/admin`.
+- When signing in on the current Preview, also add the exact Preview callback `https://project-29-12-git-chore-project-29-12-least-privilege-velox19.vercel.app/admin`.
 - Only add other Preview callback URLs when the owner has a concrete need to use those exact deployments. Avoid broad wildcards for temporary deployments.
 
 The application sends the current browser origin plus `/admin` as `emailRedirectTo`. A mismatch between this callback and the Supabase allowlist can prevent the Magic Link from returning to Admin.
