@@ -140,3 +140,18 @@ An earlier CI run failed in Next.js `next/font/google` with a Google Font respon
 - Review the Preview experience and explicitly approve Production release.
 
 **Current release assessment:** NOT PRODUCTION-READY. The build is healthy, but credential rotation, Admin onboarding, real content, browser QA, and release approval remain unresolved.
+
+## 9. Verification performed after the database hardening
+
+- Current working-branch Preview deployment: `dpl_P4z8xnSons26NzApQ5iyLzdRVF2s`.
+- Preview URL: https://project-29-12-jcm7ua41s-velox19.vercel.app
+- Source branch/commit: `chore/project-29-12-least-privilege` / `55ba5a15951691370d1ff58f963ab0a811c379c8`.
+- Vercel deployment state: `READY`; the commit status context `Vercel` reported `success`.
+- Build log evidence: Next.js 15.5.29 optimized production build compiled successfully; lint/type validation stage completed; static page generation completed 4/4; route output included `/`, `/admin`, and `/_not-found`; Vercel reported build and deployment completed.
+- npm emitted a non-blocking warning that the `cache-dir` environment configuration is unknown and may stop working in a future npm major version.
+- The Preview deployment is not Production. Production remains on the older `main` commit.
+- Browser-level workflows were not exercised in this verification: Supabase magic-link authentication, Admin allowlist activation, Admin PIN expiry, content/Gallery CRUD, public media playback, responsive and keyboard navigation, and cross-device persistence remain NOT VERIFIED.
+- A current-branch GitHub Actions run was not returned by the available repository workflow query. Do not treat the Vercel build as proof that a separate GitHub Actions workflow ran.
+- The deployment build verifies the application source and type/lint stage; it does not exercise live user permissions or media operations.
+
+**Updated release assessment:** The database least-privilege change is VERIFIED, and the current working-branch Preview build is READY. The complete product remains NOT PRODUCTION-READY until credential rotation/history decision, Admin onboarding, owner-provided content, browser QA, migration-baseline reproducibility, and explicit release approval are complete.
