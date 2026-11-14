@@ -11,7 +11,7 @@ import {
   type ProjectMemory,
 } from "@/lib/project-2912-content";
 
-type Tab = "home" | "acts" | "story" | "letter" | "mixtape" | "ocean" | "secret" | "gallery" | "checkpoints";
+type Tab = "home" | "acts" | "story" | "letter" | "mixtape" | "ocean" | "secret" | "gallery" | "checkpoints" | "security";
 type Question = { question_key: string; prompt: string; sort_order: number; is_active: boolean };
 
 const tabs: { id: Tab; label: string }[] = [
@@ -24,6 +24,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: "secret", label: "สวนลับ" },
   { id: "gallery", label: "รูปภาพ" },
   { id: "checkpoints", label: "คำถามความทรงจำ" },
+  { id: "security", label: "ความปลอดภัย" },
 ];
 
 function mergeContent(value: unknown): ProjectContent {
@@ -113,6 +114,9 @@ export function AdminConsole() {
   const [session, setSession] = useState<Session | null>(null);
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
+  const [rotationCurrentPin, setRotationCurrentPin] = useState("");
+  const [rotationNewPin, setRotationNewPin] = useState("");
+  const [rotationConfirmPin, setRotationConfirmPin] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [pinExpiresAt, setPinExpiresAt] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -277,6 +281,66 @@ export function AdminConsole() {
     setPinExpiresAt(typeof data?.expiresAt === "number" ? data.expiresAt : Math.floor(Date.now() / 1000) + 900);
     setUnlocked(true);
     setStatus("ปลดล็อกสำเร็จ · สิทธิ์แก้ไขจะหมดอายุใน 15 นาที");
+  };
+
+  const rotateAdminPin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!client) return;
+
+    if (!/^[0-9]{4,12}$/.test(rotationCurrentPin)) {
+      setStatus("กรุณากรอก PIN ปัจจุบัน 4–12 หลัก");
+      return;
+    }
+    if (!/^[0-9]{6,12}$/.test(rotationNewPin)) {
+      setStatus("PIN ใหม่ต้องเป็นตัวเลข 6–12 หลัก");
+      return;
+    }
+    if (rotationNewPin !== rotationConfirmPin) {
+      setStatus("PIN ใหม่และการยืนยันไม่ตรงกัน");
+      return;
+    }
+    if (rotationCurrentPin === rotationNewPin) {
+      setStatus("PIN ใหม่ต้องไม่ซ้ำกับ PIN ปัจจุบัน");
+      return;
+    }
+
+    setBusy(true);
+    setStatus("กำลังตรวจสอบ PIN เดิมและเปลี่ยนรหัส...");
+    const { data, error } = await client.functions.invoke("project-2912-gateway", {
+      body: {
+        action: "rotate_admin_pin",
+        currentPin: rotationCurrentPin,
+        newPin: rotationNewPin,
+      },
+    });
+
+    setRotationCurrentPin("");
+    setRotationNewPin("");
+    setRotationConfirmPin("");
+
+    if (error || data?.rotated !== true) {
+      setBusy(false);
+      const message = data?.error === "current_pin_invalid"
+        ? "PIN ปัจจุบันไม่ถูกต้อง หรือเกินจำนวนครั้งที่อนุญาต"
+        : data?.error === "rotation_failed_reauthenticate"
+          ? "ระบบยกเลิกช่วงปลดล็อกเดิมแล้ว แต่เปลี่ยน PIN ไม่สำเร็จ กรุณาเข้าสู่ระบบและลองใหม่"
+          : "เปลี่ยน PIN ไม่สำเร็จ กรุณาลองใหม่";
+      setStatus(message);
+      return;
+    }
+
+    setPin("");
+    setUnlocked(false);
+    setPinExpiresAt(null);
+    const { data: refreshed, error: refreshError } = await client.auth.refreshSession();
+    setBusy(false);
+    if (refreshError || !refreshed.session) {
+      await client.auth.signOut();
+      setStatus("เปลี่ยน PIN สำเร็จและยกเลิกสิทธิ์ปลดล็อกเดิมแล้ว กรุณาเข้าสู่ระบบใหม่");
+      return;
+    }
+    setSession(refreshed.session);
+    setStatus("เปลี่ยน Admin PIN สำเร็จ · ช่วงปลดล็อกเดิมถูกยกเลิกแล้ว กรุณาใช้ PIN ใหม่ในครั้งถัดไป");
   };
 
   const saveContent = async () => {
@@ -579,7 +643,7 @@ export function AdminConsole() {
           <Link className="admin-back" href="/">← กลับสู่เว็บไซต์</Link>
           <span className="admin-eyebrow">SECOND SECURITY LAYER</span>
           <h1>ปลดล็อก<br /><em>Admin Studio</em></h1>
-          <p>ยืนยันรหัส 4 หลักเพิ่มเติมเพื่อเข้าสู่ระบบแก้ไข</p>
+          <p>ยืนยัน Admin PIN 4–12 หลักเพื่อเข้าสู่ระบบแก้ไข</p>
           <form onSubmit={verifyAdminPin} className="admin-auth-form">
             <label className="admin-field">
               <span>Admin PIN</span>
@@ -587,15 +651,15 @@ export function AdminConsole() {
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"
-                pattern="[0-9]{4}"
-                maxLength={4}
+                pattern="[0-9]{4,12}"
+                maxLength={12}
                 required
                 value={pin}
-                onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))}
+                onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 12))}
                 placeholder="••••"
               />
             </label>
-            <button className="admin-primary-button" disabled={busy || pin.length !== 4}>
+            <button className="admin-primary-button" disabled={busy || pin.length < 4}>
               {busy ? "กำลังตรวจสอบ..." : "ปลดล็อก"}
             </button>
           </form>
@@ -844,6 +908,69 @@ export function AdminConsole() {
                 }])}>+ เพิ่มภาพความทรงจำ</button>
                 <button className="admin-primary-button" disabled={busy} onClick={() => void saveGallery()}>บันทึก Gallery</button>
               </div>
+            </Panel>
+          ) : null}
+
+          {activeTab === "security" ? (
+            <Panel
+              title="เปลี่ยน Admin PIN"
+              description="ยืนยัน PIN ปัจจุบันก่อนตั้งรหัสใหม่ ระบบจะเก็บเฉพาะ bcrypt hash และยกเลิกช่วงปลดล็อกเดิม"
+            >
+              <form onSubmit={rotateAdminPin} className="admin-auth-form">
+                <label className="admin-field">
+                  <span>PIN ปัจจุบัน</span>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="current-password"
+                    pattern="[0-9]{4,12}"
+                    maxLength={12}
+                    required
+                    value={rotationCurrentPin}
+                    onChange={(event) => setRotationCurrentPin(event.target.value.replace(/\D/g, "").slice(0, 12))}
+                    placeholder="กรอก PIN ปัจจุบัน"
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>PIN ใหม่ (6–12 หลัก)</span>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="new-password"
+                    pattern="[0-9]{6,12}"
+                    minLength={6}
+                    maxLength={12}
+                    required
+                    value={rotationNewPin}
+                    onChange={(event) => setRotationNewPin(event.target.value.replace(/\D/g, "").slice(0, 12))}
+                    placeholder="ตั้ง PIN ใหม่"
+                  />
+                </label>
+                <label className="admin-field">
+                  <span>ยืนยัน PIN ใหม่</span>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="new-password"
+                    pattern="[0-9]{6,12}"
+                    minLength={6}
+                    maxLength={12}
+                    required
+                    value={rotationConfirmPin}
+                    onChange={(event) => setRotationConfirmPin(event.target.value.replace(/\D/g, "").slice(0, 12))}
+                    placeholder="กรอก PIN ใหม่อีกครั้ง"
+                  />
+                </label>
+                <p className="admin-security-note">
+                  อย่าใช้รหัสเดียวกับบัญชีอื่น และห้ามส่ง PIN ผ่านแชตหรือบันทึกลงไฟล์โครงการ
+                </p>
+                <button
+                  className="admin-primary-button"
+                  disabled={busy || rotationCurrentPin.length < 4 || rotationNewPin.length < 6 || rotationNewPin !== rotationConfirmPin}
+                >
+                  {busy ? "กำลังเปลี่ยน..." : "เปลี่ยน Admin PIN"}
+                </button>
+              </form>
             </Panel>
           ) : null}
 
