@@ -45,6 +45,7 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] Save Mixtape content; confirm the file path and track metadata are published together.
 - [ ] Refresh the public page and open it on another device; confirm the same uploaded track still plays.
 - [ ] Upload a new file over an existing track; confirm the previous published track remains intact until the new content is saved.
+- [ ] Replace an existing Gallery image and Mixtape cover; confirm the currently published assets remain unchanged until their metadata is saved.
 - [ ] Confirm the public player has no upload controls and only Admin can upload media.
 - [ ] Confirm controls work with keyboard navigation and reduced-motion settings.
 
@@ -86,5 +87,5 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 ## Known limitations
 - Mixtape files are stored in the public `project-2912-media` bucket because the recipient must be able to play them without a login. Only upload media intended to be shared with the recipient.
 - Audio uploads are constrained by the Storage bucket's 25 MiB limit; the Admin UI applies a lower per-file limit.
-- Audio and cover uploads are stored immediately, but the public page starts using new media only after Admin saves the Mixtape content. Replacing or removing tracks may leave old Storage objects behind; cleanup should follow confirmation that the new version is published.
+- Audio and cover uploads are stored immediately, but the public page starts using new media only after Admin saves the Mixtape content. Versioned replacement uploads intentionally leave the previous Storage object intact until the new metadata is published. Replacing or removing Gallery/Mixtape media may leave old Storage objects behind; cleanup should follow confirmation that the new version is published.
 - Admin login requires a confirmed email present in the private allowlist, followed by the Admin PIN. The allowlist is intentionally empty until the owner provides the exact address through a private channel.
