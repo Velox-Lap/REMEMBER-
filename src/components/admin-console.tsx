@@ -175,26 +175,21 @@ export function AdminConsole() {
     }
     setContent(mergeContent(contentResult.data?.payload));
 
-    if (!memoryResult.error && memoryResult.data?.length) {
-      const items: ProjectMemory[] = memoryResult.data.map((row, index) => ({
-        id: row.id,
-        title: row.title,
-        caption: row.caption,
-        date: row.event_date ?? "",
-        tone: (["sage", "sand", "blue", "moss"] as const)[index % 4],
-        imageUrl: row.image_path,
-      }));
-      setGallery(items);
-      setSavedMemoryIds(items.map((item) => item.id));
-    } else {
-      const fallback = defaultProjectContent.memoryItems.map((item) => ({
-        ...item,
-        id: crypto.randomUUID(),
-        imageUrl: null,
-      }));
-      setGallery(fallback);
-      setSavedMemoryIds([]);
+    if (memoryResult.error) {
+      setBusy(false);
+      setStatus("โหลด Gallery ไม่สำเร็จ: " + memoryResult.error.message);
+      return;
     }
+    const items: ProjectMemory[] = (memoryResult.data ?? []).map((row, index) => ({
+      id: row.id,
+      title: row.title,
+      caption: row.caption,
+      date: row.event_date ?? "",
+      tone: (["sage", "sand", "blue", "moss"] as const)[index % 4],
+      imageUrl: row.image_path,
+    }));
+    setGallery(items);
+    setSavedMemoryIds(items.map((item) => item.id));
 
     if (!questionResult.error && questionResult.data) {
       setQuestions(questionResult.data as Question[]);
@@ -304,15 +299,6 @@ export function AdminConsole() {
     setStatus("กำลังบันทึก Gallery...");
     const currentIds = gallery.map((item) => item.id);
     const removedIds = savedMemoryIds.filter((id) => !currentIds.includes(id));
-    if (removedIds.length) {
-      const { error: deleteError } = await client.from("project_2912_memories").delete().in("id", removedIds);
-      if (deleteError) {
-        setBusy(false);
-        setStatus("ลบรูปเดิมไม่สำเร็จ: " + deleteError.message);
-        return;
-      }
-    }
-
     if (gallery.length) {
       const rows = gallery.map((item, index) => ({
         id: item.id,
@@ -327,6 +313,17 @@ export function AdminConsole() {
       if (error) {
         setBusy(false);
         setStatus("บันทึก Gallery ไม่สำเร็จ: " + error.message);
+        return;
+      }
+    }
+
+    // Persist new and edited rows before deleting removed rows so a failed upsert
+    // cannot erase the previously saved gallery.
+    if (removedIds.length) {
+      const { error: deleteError } = await client.from("project_2912_memories").delete().in("id", removedIds);
+      if (deleteError) {
+        setBusy(false);
+        setStatus("บันทึกรูปใหม่แล้ว แต่ลบรายการเดิมไม่สำเร็จ: " + deleteError.message);
         return;
       }
     }
