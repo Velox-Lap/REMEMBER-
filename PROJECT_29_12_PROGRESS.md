@@ -1,10 +1,10 @@
 # PROJECT 29.12 — Development Progress
 
 **Snapshot:** 2026-11-14 (Asia/Bangkok)
-**Working branch:** `chore/project-29-12-ci-coverage`
-**Parent development branch:** `feat/project-29-12-hardening`
-**Parent HEAD at branch creation:** `346822dfd645f6c7589c63638beee34cf311d7fc`
-**Latest implementation commit recorded:** `279646088a0effe964442eab93cb4ec4b7c678a1`
+**Working branch:** `chore/project-29-12-least-privilege`
+**Parent development branch:** `chore/project-29-12-ci-coverage`
+**Parent HEAD at branch creation:** `203762f0def2573e7ac959f514c633ad8023c42b`
+**Latest code/migration commit recorded:** `cb0fe0730e53700a9d3c84375f16b4d8f771b2a4`
 
 ## 1. Current state
 
@@ -17,7 +17,7 @@ The correct infrastructure targets have been cross-checked:
 - Supabase: `Velox-Lap's Project` (`zchqkhwprevcitfarkxa`)
 - The separate Supabase project `RNMCOM` was not modified.
 
-The development branch `feat/project-29-12-hardening` is 83 commits ahead of `main` and has no commits behind it. Production still references the older `main` commit. Do not merge or promote before manual QA, owner review, Admin onboarding, and credential rotation.
+The current working branch `chore/project-29-12-least-privilege` is 100 commits ahead of `main` and has no commits behind it at the latest comparison. Production still references the older `main` commit. Do not merge or promote before manual QA, owner review, Admin onboarding, and credential rotation.
 
 ## 2. Completed in this session
 
@@ -36,20 +36,21 @@ The development branch `feat/project-29-12-hardening` is 83 commits ahead of `ma
 | Remove build-time Google Fonts dependency | VERIFIED | Four Fontsource families self-hosted; Preview build succeeds without `next/font/google` fetch |
 | Align CI runtime | VERIFIED | Node 26, matching the Vercel project runtime and current LTS line |
 | Create persistent progress document | IMPLEMENTED | This file |
+| Revoke anonymous mutation privileges on PROJECT 29.12 public tables | VERIFIED | Supabase migration `20261114110524_project2912_revoke_anon_mutations`; post-migration SQL privilege checks pass |
 
 ## 3. Current deployment evidence
 
 ### Preview
 
 - Vercel project: `project-29-12`
-- Deployment: `dpl_ExFs4PQgwheZqpfMERe4aw86dRnp`
-- URL: https://project-29-12-bj75dpz0b-velox19.vercel.app
-- Source branch: `feat/project-29-12-hardening`
-- Source commit: `346822dfd645f6c7589c63638beee34cf311d7fc`
-- Vercel state: `READY`
-- Build log evidence: Next.js compile succeeded; lint/type validation ran; static page generation completed; routes `/`, `/admin`, and `/_not-found` were emitted.
+- Latest observed deployment on the current working branch: `dpl_6uqgz4V3NoV5SjYNnzBXVQBd129s`
+- Preview URL: https://project-29-12-916wu0iqr-velox19.vercel.app
+- Source branch: `chore/project-29-12-least-privilege`
+- Source commit: `cb0fe0730e53700a9d3c84375f16b4d8f771b2a4`
+- Vercel state at last inspection: `QUEUED` (not yet verified as READY).
+- Earlier commits on this branch reached READY: `f27b120b75d63cd83afc9515ad58bb0743c73583` and `43a31089f6dbf6dd389e894996400fe872c3abe6`.
 
-This deployment is attached to the parent development branch, not the new CI-only branch. A new Preview and CI run should be checked after the CI change commits.
+The preview URL is not Production. Recheck the latest deployment after the final documentation commits and do not infer runtime success from QUEUED/READY status alone.
 
 ### Production
 
@@ -86,6 +87,7 @@ Only the older `main` commit is in Production. The hardening branch remains a Pr
 ## 5. Security observations
 
 - All inspected project-specific public and private tables have RLS enabled.
+- Before the latest migration, the `anon` role had excess INSERT/UPDATE/DELETE/TRUNCATE/REFERENCES/TRIGGER grants on the three public PROJECT 29.12 data tables. Migration `20261114110524_project2912_revoke_anon_mutations` revoked those permissions; post-migration checks confirm anonymous SELECT only. Authenticated write privileges are retained and remain restricted by Admin claim + recent PIN RLS policies.
 - Direct `anon`/`authenticated` access to the `project_2912_private` schema is denied by policy.
 - Project-specific write policies use the Admin app-metadata claim and a time-limited PIN unlock.
 - The Edge Function verifies bearer tokens and Admin metadata before privileged actions; the service-role client is kept in the Edge Function, not browser code.
@@ -96,7 +98,7 @@ Only the older `main` commit is in Production. The hardening branch remains a Pr
 
 ## 6. Database and application changes
 
-No database DDL, migration, data write, storage upload/deletion, allowlist change, PIN rotation, Production deployment, or merge into `main` was performed in this session.
+One least-privilege database migration was applied to the verified PROJECT 29.12 Supabase project. It revokes non-SELECT privileges from `anon` on `project_2912_content`, `project_2912_memories`, and `project_2912_questions`. Post-migration SQL checks confirmed: anon SELECT=true, INSERT/UPDATE/DELETE/TRUNCATE=false; authenticated retains SELECT/INSERT/UPDATE/DELETE grants subject to RLS. No rows, content payloads, checkpoint hashes, allowlist entries, PIN hashes, media objects, or user records were changed. No production application deployment, branch merge, Admin onboarding, or credential rotation was performed.
 
 ### CI and build reliability changes
 
@@ -111,19 +113,20 @@ An earlier CI run failed in Next.js `next/font/google` with a Google Font respon
 
 ### Remaining engineering debt
 
+- The Supabase database had 11 prior migrations before this session, but the repository tree had no matching earlier migration files. The new least-privilege migration is now tracked at `supabase/migrations/20261114110524_project2912_revoke_anon_mutations.sql`; import/version the existing schema history before relying on this repo as a fully reproducible database source.
 - No committed package-manager lockfile exists; installs still use `npm install --no-package-lock`, so dependency resolution is not fully reproducible.
 - The successful install reported 8 dependency vulnerabilities (7 moderate, 1 high) and several deprecated transitive packages. The install summary did not identify the affected package paths; run a detailed dependency audit before release.
 - No local build was run in this session; the passing verification is from GitHub Actions and Vercel build logs.
 
 ## 7. Next actions
 
-1. Integrate the verified CI/font changes into `feat/project-29-12-hardening` after reviewing the follow-up branch diff.
-2. Add a committed lockfile and investigate the 1 high / 7 moderate dependency audit findings.
+1. Verify that the latest Vercel Preview and GitHub Actions checks for `chore/project-29-12-least-privilege` complete successfully.
+2. Import/version the earlier Supabase migration history and create a reproducible package lockfile; investigate dependency vulnerabilities.
 3. Review the complete Admin and public experience using an authenticated browser session.
 4. Rotate the leaked Admin PIN securely; resolve the public-history remediation decision.
 5. Authorize the Admin email privately and verify Supabase Auth redirects.
 6. Complete Admin onboarding and save owner-approved content/media.
-7. Run the manual QA checklist on desktop and mobile.
+7. Run manual browser QA on desktop and mobile, including guest read-only API tests.
 8. Obtain explicit owner approval before merging/promoting to Production.
 9. Verify the actual Production deployment and critical user flows after release.
 
