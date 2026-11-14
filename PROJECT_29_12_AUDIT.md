@@ -5,13 +5,13 @@
 **Target repository:** `Velox-Lap/REMEMBER-`  
 **Target Vercel project:** `project-29-12`  
 **Target Supabase project:** `zchqkhwprevcitfarkxa`  
-**Audit mode:** Read-only infrastructure inspection plus non-destructive documentation/code corrections on `feat/project-29-12-hardening`, with CI follow-up work isolated on `chore/project-29-12-ci-coverage`.
+**Audit mode:** Read-only infrastructure inspection, source/documentation review, and one non-destructive least-privilege migration applied to the verified PROJECT 29.12 Supabase project. Production application deployment and personal-content writes were not performed.
 
 ## 1. Executive summary
 
 PROJECT 29.12 is not a blank project and should not be rewritten from scratch. The existing feature branch contains a substantially implemented Next.js storytelling site, Supabase-backed content loading, an Admin Studio, media persistence, checkpoint verification, and a protected Admin write model.
 
-The major release issue is **branch/environment drift**: the Vercel Production deployment is built from the older `main` branch, while the more complete implementation exists on `feat/project-29-12-hardening` and is deployed only as a Preview. The current Production deployment and the feature Preview must not be treated as the same application version.
+The major release issue is **branch/environment drift**: the Vercel Production deployment is built from the older `main` branch, while the more complete implementation is on the development lineage now continued by `chore/project-29-12-least-privilege` (100 commits ahead of `main`, zero behind at the latest comparison). The Production alias and the Preview are different application versions. A new read-only privilege hardening migration has been applied to the shared Supabase project; the application remains a Preview candidate and has not been promoted.
 
 The Supabase infrastructure for PROJECT 29.12 is present and healthy. The project-specific content and memory tables are not initialized with published records, the Admin allowlist is empty, and no real Gallery images or Mixtape tracks have been supplied. These are blockers to completing the owner workflow, not reasons to fabricate content.
 
@@ -22,11 +22,13 @@ No Production deployment, database migration, destructive database operation, br
 | System | Verified target | Observed state |
 |---|---|---|
 | GitHub | `Velox-Lap/REMEMBER-` | Public repository; `main` plus development branch |
-| Development branch | `feat/project-29-12-hardening` | Contains Admin/Supabase implementation |
+| Previous feature branch | `feat/project-29-12-hardening` | Parent of the current development lineage |
+| Current working branch | `chore/project-29-12-least-privilege` | 100 commits ahead of `main`; includes the Admin/Supabase implementation plus the new guest privilege migration |
 | Vercel | `project-29-12` | Next.js project in team `velox19` |
 | Production deployment | `main` commit `6bac58068867f401e011fcf951cc42d550774411` | READY; older implementation |
 | Parent hardening Preview | `feat/project-29-12-hardening` | READY; commit `346822dfd645f6c7589c63638beee34cf311d7fc` |
-| Latest follow-up Preview | `chore/project-29-12-ci-coverage` | READY; commit `279646088a0effe964442eab93cb4ec4b7c678a1`; compile and deployment succeeded |
+| Earlier CI follow-up Preview | `chore/project-29-12-ci-coverage` | READY; commit `279646088a0effe964442eab93cb4ec4b7c678a1` |
+| Current least-privilege Preview | `chore/project-29-12-least-privilege` | Latest commit deployment is being tracked separately from Production |
 | Supabase | `zchqkhwprevcitfarkxa` | ACTIVE_HEALTHY |
 | Storage bucket | `project-2912-media` | Public read; Admin-restricted writes |
 
@@ -74,7 +76,7 @@ Observed project-specific row counts at audit time:
 | Admin allowlist | 0 | No email can currently be activated as the project Admin |
 | Quiz attempts | 0 | No rate-limit history currently stored |
 
-All inspected tables in `public` and `project_2912_private` have Row Level Security enabled. Private-schema direct access is denied to `anon` and `authenticated`. Project-specific public read policies are limited to published content/active prompts. Project-specific write policies require the Admin claim and a valid recent PIN-unlock timestamp.
+All inspected project-specific tables in `public` and `project_2912_private` have Row Level Security enabled. Direct `anon`/`authenticated` access to the private schema is denied. Public read policies limit content and memories to published rows and checkpoint prompts to active rows. Write policies apply only to `authenticated` users carrying the Admin app-metadata claim and a valid recent PIN-unlock timestamp. A database privilege check found that `anon` had unnecessary non-SELECT grants on the three public project tables; the grants were revoked in migration `20261114110524_project2912_revoke_anon_mutations`. Post-migration checks confirmed `anon` retains SELECT but no INSERT, UPDATE, DELETE, or TRUNCATE privileges, while `authenticated` retains the table privileges needed by the protected Admin workflow.
 
 The Storage bucket is public for playback by the recipient. Public read is intentional for the current product design; only media approved for sharing should be uploaded. Admin upload/update/delete policies require the Admin claim and an active PIN-unlock window.
 
@@ -121,6 +123,12 @@ The Storage bucket is public for playback by the recipient. Public read is inten
 - **Status:** OPEN.
 
 ### MEDIUM
+
+**SEC-004 — Anonymous role had unnecessary mutation privileges (RESOLVED)**
+- **Evidence:** Before remediation, `anon` held `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER` table privileges on `project_2912_content`, `project_2912_memories`, and `project_2912_questions`, although Guest/Public users only require reads. RLS write policies were limited to authenticated Admin users, but the direct grants were broader than necessary.
+- **Action completed:** Added and applied `supabase/migrations/20261114110524_project2912_revoke_anon_mutations.sql`. `anon` now retains SELECT only on these tables. Post-migration SQL checks confirmed the data-mutation privileges are false for `anon`; authenticated Admin operations retain their grants and remain subject to the Admin + recent PIN RLS predicates.
+- **Data impact:** No rows, content payloads, checkpoint hashes, media files, or user records were modified.
+- **Status:** RESOLVED at the database privilege layer; public REST and browser end-to-end regression checks remain pending.
 
 **DOC-001 — Repository documentation was stale**
 - **Evidence:** The README described a frontend-only/static site, despite the development branch containing Supabase integration and an Admin Studio. `.env.example` did not list the required public Supabase variables.
@@ -180,7 +188,7 @@ The Storage bucket is public for playback by the recipient. Public read is inten
 | R-003 | Published content loads online | Critical | IMPLEMENTED, DATA NOT INITIALIZED | Saved content appears after refresh and on another device |
 | R-004 | Admin sign-in | High | BLOCKED | Allowlisted owner completes magic link |
 | R-005 | Admin authorization | Critical | IMPLEMENTED, OWNER NOT ONBOARDED | Non-allowlisted accounts cannot activate; only Admin can write |
-| R-006 | Guest/public read-only access | High | POLICY DESIGNED | Anonymous reads published content; anonymous writes are denied |
+| R-006 | Guest/public read-only access | High | DB PRIVILEGES + RLS VERIFIED; API QA PENDING | Anonymous reads permitted rows; anonymous mutation privileges revoked; Admin writes remain protected |
 | R-007 | Gallery CRUD | High | IMPLEMENTED, NOT RUNTIME VERIFIED | Add/edit/remove persists without partial data loss |
 | R-008 | Mixtape persistence | High | IMPLEMENTED, NOT RUNTIME VERIFIED | Uploaded tracks and metadata survive refresh/device change |
 | R-009 | Checkpoint verification | High | IMPLEMENTED, NOT RUNTIME VERIFIED | Correct/incorrect answers and rate limits behave correctly |
@@ -190,7 +198,7 @@ The Storage bucket is public for playback by the recipient. Public read is inten
 
 ## 7. Changes made during this audit
 
-The original hardening changes listed below are on `feat/project-29-12-hardening`. A follow-up branch, `chore/project-29-12-ci-coverage`, was created from that branch for additional CI coverage:
+The original hardening changes listed below originated on `feat/project-29-12-hardening`; CI coverage work was continued on `chore/project-29-12-ci-coverage`. The current branch `chore/project-29-12-least-privilege` continues from that development lineage:
 
 - Redacted the exposed credential from the current Phase 1 status document.
 - Removed personal checkpoint values from the public QA checklist.
@@ -204,8 +212,11 @@ The original hardening changes listed below are on `feat/project-29-12-hardening
 - Changed CI from Node 20 to Node 26 to match the Vercel project runtime and the engine requirement of the installed Supabase JS package.
 - Replaced build-time `next/font/google` with four self-hosted Fontsource families (Cormorant Garamond, Playfair Display, Inter, Caveat), preserving current typography variables.
 - Added `PROJECT_29_12_PROGRESS.md` to record current infrastructure, verification, blockers, and next steps.
+- Created `chore/project-29-12-least-privilege` from the latest reviewed development commit.
+- Added `supabase/migrations/20261114110524_project2912_revoke_anon_mutations.sql` and applied the matching Supabase migration.
+- Verified after migration that `anon` retains SELECT on the three public PROJECT 29.12 tables but no INSERT/UPDATE/DELETE/TRUNCATE; authenticated grants remain available for protected Admin operations.
 
-No Supabase migration, database write, Admin allowlist change, PIN rotation, merge into `main`, or Production deployment was performed. The new CI run remains pending verification.
+No table rows, Admin allowlist entries, PIN hashes, checkpoint answers, media objects, or personal content were changed. No PIN rotation, merge into `main`, or Production Vercel deployment was performed. Browser/API regression and the latest branch CI run remain to be verified.
 
 ## 8. Verification status and limitations
 
@@ -219,18 +230,21 @@ No Supabase migration, database write, Admin allowlist change, PIN rotation, mer
 - Automated local `npm run typecheck`, `npm run lint`, and `npm run build` were not executed in this audit environment. GitHub Actions ran all three checks successfully on the follow-up branch.
 - Live browser interaction tests could not be completed because browser access to the protected Vercel deployment was not available through the current inspection path. Do not infer that the login, media upload, or public site journeys passed.
 - Dependency installation reported 8 vulnerabilities (7 moderate, 1 high) and deprecated transitive packages. The install summary did not include package paths; a detailed dependency audit and a committed lockfile remain open.
+- The new migration is recorded in Supabase history as version `20261114110524` and mirrored at the same timestamp under `supabase/migrations/`. The repository did not contain the earlier Supabase migration files at the start of this work; import/version the existing schema history before treating this repository as a complete reproducible database-migration source.
+- Post-migration privilege checks passed: all three tables report `anon_select=true`, `anon_insert=false`, `anon_update=false`, `anon_delete=false`, `anon_truncate=false`; authenticated retains SELECT/INSERT/UPDATE/DELETE grants subject to RLS.
 - The existing manual QA checklist remains the required release gate.
 
 ## 9. Next implementation priorities
 
-1. Verify the new branch-push GitHub Actions run and its Vercel Preview deployment.
-2. Rotate the exposed Admin PIN and decide whether Git history needs a sensitive-data purge.
+1. Verify the latest GitHub Actions run and READY state for the current least-privilege Preview.
+2. Rotate the exposed Admin PIN and decide whether Git history needs a coordinated sensitive-data purge.
 3. Complete the private Admin allowlist and Supabase Auth redirect configuration using the owner's authorized email and Vercel domains.
-4. Run actual browser tests on desktop and mobile against the latest Preview.
-5. Initialize published content and upload only approved recipient-facing media.
-6. Resolve remaining functional/accessibility defects found during QA.
-7. Obtain explicit owner approval after reviewing the recipient-facing Preview.
-8. Merge/promote the tested branch, then verify the actual Production URL and critical workflows.
+4. Import/version the pre-existing Supabase migration history and establish reproducible dependency installation with a lockfile.
+5. Run actual browser/API tests on desktop and mobile against the latest Preview, including anonymous read-only access and protected Admin writes.
+6. Initialize published content and upload only owner-approved recipient-facing media.
+7. Resolve remaining functional/accessibility defects found during QA.
+8. Obtain explicit owner approval after reviewing the recipient-facing Preview.
+9. Merge/promote the tested branch, then verify the actual Production URL and critical workflows.
 
 ## 10. Owner actions required
 
