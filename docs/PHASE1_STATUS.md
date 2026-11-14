@@ -1,52 +1,50 @@
 # PROJECT 29.12 — Phase 1 Engineering Status
 
-**Date:** 2026-11-11  
-**Branch:** `feat/project-29-12-hardening`  
-**Latest Preview commit:** `a24d235c27535ecd832eda3eb39b14314fc606df`  
-**Preview URL:** https://project-29-12-d0fl5lsg5-velox19.vercel.app
+**Last reviewed:** 2026-11-14  
+**Development branch:** `feat/project-29-12-hardening`  
+**Latest recorded Preview deployment:** https://project-29-12-qjgmkbdxk-velox19.vercel.app
 
-## Verified
+## Verified at the previous Phase 1 checkpoint
 
-- Vercel Preview deployment is `READY`.
-- The Preview build compiled, passed TypeScript validation, completed static page generation, and produced the Next.js route output.
-- The deployed public route `/` returned HTTP 200.
-- The deployed Admin route `/admin` returned HTTP 200 and rendered the email-login screen.
-- The public HTML uses Thai document language, includes Chapter 08 and the Mixtape chapter, contains no `[RECIPIENT NAME]` placeholder, and does not render empty photo placeholder cards.
-- Supabase project `zchqkhwprevcitfarkxa` is `ACTIVE_HEALTHY`.
-- Admin PIN `2912` was compared against the stored bcrypt hash without exposing the hash; it matched.
-- The three owner-supplied memory dates were normalized and saved as bcrypt hashes. Direct hash comparison verified all three stored answers:
-  - First meeting: `03/07/25`
-  - First trip: `19/09/26`
-  - First 24 hours together: `02/08/26`
-- The private schema is not granted to `anon` or `authenticated`; Admin and media write policies check the Admin claim and the recent PIN-unlock expiry.
-- The Edge Function Gateway is Active at version 5, with the tightened origin allowlist.
+- The Vercel Preview deployment was reported as READY.
+- The Preview build was reported to have compiled, passed TypeScript validation, completed static page generation, and produced the Next.js route output.
+- The public route `/` and Admin route `/admin` were previously reported as HTTP 200.
+- The public page was reported to use Thai document language, include Chapter 08 and the Mixtape chapter, and omit empty photo placeholder cards.
+- Supabase project `zchqkhwprevcitfarkxa` was ACTIVE_HEALTHY.
+- The owner-provided checkpoint answers were stored as hashes and verified. Raw answers are intentionally excluded from repository documentation.
+- The private schema denies direct access to `anon` and `authenticated`; Admin and media write policies require the Admin claim and an unexpired PIN-unlock window.
+- The `project-2912-gateway` Edge Function was ACTIVE at version 5.
 - The `project_2912_content.updated_by` foreign-key index was added.
 
-## Implemented on the feature branch
+These are historical verification notes from the earlier checkpoint, not a substitute for re-running the browser and production tests in the current release cycle.
+
+## Implemented on the development branch
 
 - Admin Studio can edit Home, Act Cards, Story Timeline, Letter, Mixtape, Ocean, Secret Garden, Memory Gallery, and Memory Checkpoint prompts/answers.
 - Mixtape metadata persists in the content JSON payload; audio and cover files upload to Supabase Storage.
-- Public playback uses the saved Storage paths; audio uploads are no longer offered to public visitors.
+- Public playback uses saved Storage paths; media upload controls are restricted to Admin.
 - Admin media uploads are constrained to supported MIME types and file sizes below the bucket limit.
-- Gallery stays hidden until real photographs exist.
-- Back-to-top hides near the footer; chapter warp now prefers the browser `scrollend` event with a bounded fallback timer.
-- QA and personalization guides reflect online media storage and current manual test cases.
+- The public Gallery remains hidden until real photographs exist.
+- Chapter navigation includes a scroll-completion-aware transition and a bounded fallback.
+- QA and personalization guides describe online Admin editing and persistent Mixtape media.
 
-## Still blocked on owner participation
+## Owner participation still required
 
-- The private Admin allowlist contains zero email entries. The owner must provide the exact email to authorize; then the owner must receive and confirm the magic link.
-- Supabase Auth redirect URLs must include the final chosen Vercel domains. The current connector does not expose Auth URL configuration, so verify this in Supabase Dashboard if magic-link callbacks fail.
-- No real photographs or audio tracks have been supplied yet. Public Gallery is intentionally empty, and the Mixtape player displays a deliberate empty state until media is uploaded through Admin.
-- The content row is not yet initialized; the site currently uses safe code defaults until the owner signs in and saves from Admin Studio.
+- The private Admin allowlist currently has zero email entries. The owner must supply and authorize the exact Admin email through a private channel, then complete the magic-link confirmation.
+- Supabase Auth redirect URLs must include the final chosen Vercel domains.
+- Real photographs and audio tracks have not yet been supplied. The public Gallery and Mixtape intentionally remain in empty states until media is uploaded through Admin.
+- The published content row has not yet been initialized; the site therefore uses safe code defaults until an authorized Admin saves content.
 
-## Not yet verified
+## Not yet verified for release
 
-- Browser-driven interaction tests on real desktop/mobile browsers (chapter clicks, full focus behavior, audio playback, storage uploads, and cross-device persistence).
-- Successful owner magic-link login and Admin PIN flow, because the allowlist is not populated.
-- Production environment variables, Production deployment, merge, and launch. These remain intentionally untouched.
+- Browser-driven interaction tests on desktop and mobile (chapter navigation, keyboard focus, audio playback, Storage uploads, and cross-device persistence).
+- Successful owner magic-link login and Admin PIN flow.
+- Final Supabase Auth redirect configuration.
+- Production release of the development branch and end-to-end verification of the promoted Production deployment.
 
 ## Security notes
 
-- The media bucket is public for playback by the gift recipient. Do not upload sensitive or confidential images/audio to this bucket.
-- The Supabase advisor still reports leaked-password protection disabled. It should be enabled in Supabase Auth security settings when available.
-- The advisor also reports `public.accept_pair_code(text)` as an authenticated SECURITY DEFINER function. It belongs to the existing application pairing flow, so it was not changed as part of this project to avoid breaking unrelated behavior.
+- The `project-2912-media` bucket is public for recipient playback. Only upload media explicitly approved for public sharing; do not use it for confidential material.
+- Supabase Auth leaked-password protection was reported disabled by the security advisor; enable it in the Supabase Dashboard.
+- The advisor also reports an authenticated-executable `SECURITY DEFINER` pairing function in the existing application. It is outside this project's scope and was not changed during this audit.
+- A previous version of this document contained an Admin credential in plaintext. The current document has been redacted, but the repository is public and Git history may retain the earlier version. **Rotate the Admin PIN before relying on it again.** Redacting this file does not revoke the credential.
