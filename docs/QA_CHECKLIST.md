@@ -3,7 +3,7 @@
 Run this checklist against the latest Vercel Preview URL before merging or promoting to Production.
 
 ## Test environments
-- Desktop: latest Chrome and Safari
+- Desktop: current Chrome and Safari
 - Mobile: iOS Safari and Android Chrome
 - Viewports: 1440×900, 1024×768, 768×1024, 390×844, 360×800
 - Motion: default and operating-system reduced-motion enabled
@@ -41,7 +41,7 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] Switch sides during playback; confirm the previous track stops.
 - [ ] Confirm the artist and personal note match the selected track.
 - [ ] Confirm empty sides show a calm empty state and disabled playback controls.
-- [ ] In Admin Studio, upload a supported MP3, M4A/MP4, WAV, or OGG file up to 24 MB.
+- [ ] In Admin Studio, upload a supported MP3, M4A/MP4, WAV, or OGG file up to the documented limit.
 - [ ] Save Mixtape content; confirm the file path and track metadata are published together.
 - [ ] Refresh the public page and open it on another device; confirm the same uploaded track still plays.
 - [ ] Upload a new file over an existing track; confirm the previous published track remains intact until the new content is saved.
@@ -53,6 +53,18 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] Confirm progress matches the number of revealed flowers.
 - [ ] Confirm the finale stays disabled until all configured flowers are revealed.
 - [ ] Open the finale, replay the garden, and confirm state resets.
+- [ ] Confirm each checkpoint rejects incorrect input and rate limits repeated attempts.
+- [ ] Confirm the complete checkpoint flow unlocks the secret garden.
+
+## Admin and persistence
+- [ ] Confirm a non-allowlisted account cannot activate Admin privileges.
+- [ ] Confirm an allowlisted owner can complete the magic-link flow.
+- [ ] Confirm the Admin PIN is never stored in browser storage, logs, repository files, or analytics.
+- [ ] Confirm the Admin edit window expires and protected writes are rejected afterward.
+- [ ] Save Home, story, letter, Mixtape, Ocean, Secret Garden, and checkpoint prompt changes.
+- [ ] Refresh the Admin page and confirm saved changes reload from Supabase.
+- [ ] Confirm Guest/anonymous visitors can read only published content and cannot write to project tables or media.
+- [ ] Confirm Gallery add/edit/delete operations behave correctly when a Storage upload or database save fails.
 
 ## Error and not-found states
 - [ ] Visit a non-existent route and confirm the branded 404 page appears.
@@ -60,11 +72,11 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 
 ## Release gates
 - [ ] Latest Preview deployment is READY.
-- [ ] Latest Preview completes npm run build.
+- [ ] Latest Preview completes typecheck, lint, and production build.
 - [ ] No browser console errors during the flows above.
 - [ ] No horizontal overflow at the listed viewport widths.
 - [ ] No visible content is obscured by fixed-position controls.
-- [ ] The supplied milestone dates match the confirmed answers: 03/07/2025, 02/08/2026, and 19/09/2026.
+- [ ] All three memory checkpoint values match the owner-confirmed source values; do not place raw answers in public documentation.
 - [ ] Personal photos, final copy, and intended audio are supplied and reviewed.
 - [ ] Admin owner email is allowlisted and magic-link login is tested.
 - [ ] Supabase Auth redirect URLs include the intended Vercel domains.
@@ -72,7 +84,7 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - [ ] Owner explicitly approves merging and Production release.
 
 ## Known limitations
-- Mixtape files are stored in the public `project-2912-media` bucket because the published gift must be playable without a login. Only upload media intended to be shared with the gift recipient; do not upload confidential photos or private recordings.
-- Audio uploads are limited to 24 MB per track to remain below the Storage bucket's 25 MiB limit.
-- Audio and cover uploads are stored immediately, but the public page starts using new media only after the Admin saves the Mixtape content. Replacing or removing tracks may leave old Storage objects behind; cleanup can be performed after confirming the new version is published.
-- Admin login requires a confirmed email present in the private allowlist, followed by the Admin PIN. The allowlist is intentionally empty until the owner provides the exact email address.
+- Mixtape files are stored in the public `project-2912-media` bucket because the recipient must be able to play them without a login. Only upload media intended to be shared with the recipient.
+- Audio uploads are constrained by the Storage bucket's 25 MiB limit; the Admin UI applies a lower per-file limit.
+- Audio and cover uploads are stored immediately, but the public page starts using new media only after Admin saves the Mixtape content. Replacing or removing tracks may leave old Storage objects behind; cleanup should follow confirmation that the new version is published.
+- Admin login requires a confirmed email present in the private allowlist, followed by the Admin PIN. The allowlist is intentionally empty until the owner provides the exact address through a private channel.
