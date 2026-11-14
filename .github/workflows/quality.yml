@@ -29,20 +29,42 @@ jobs:
         shell: bash
         run: |
           npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          npm audit --json > "${RUNNER_TEMP}/npm-audit.json" || true
+          npm audit --json > "${RUNNER_TEMP}/npm-audit-all.json" || true
+          npm audit --omit=dev --json > "${RUNNER_TEMP}/npm-audit-production.json" || true
           npm ls minimatch postcss next @typescript-eslint/eslint-plugin @typescript-eslint/parser --all || true
-          node - "${RUNNER_TEMP}/npm-audit.json" <<'NODE'
+          node - "${RUNNER_TEMP}/npm-audit-all.json" "${RUNNER_TEMP}/npm-audit-production.json" <<'NODE'
           const fs = require("node:fs");
-          const report = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
-          const totals = report.metadata?.vulnerabilities ?? {};
-          console.log("Dependency audit totals:", JSON.stringify(totals));
-          for (const [name, item] of Object.entries(report.vulnerabilities ?? {})) {
-            console.log(`- ${name}: severity=${item.severity}, direct=${item.isDirect}, range=${item.range}, fixAvailable=${JSON.stringify(item.fixAvailable)}`);
-            console.log("  via:", JSON.stringify(item.via));
-            for (const advisory of item.via ?? []) {
-              if (typeof advisory === "object") {
-                console.log(`  advisory: ${advisory.title} | ${advisory.url}`);
+
+          function readReport(path) {
+            try {
+              return JSON.parse(fs.readFileSync(path, "utf8"));
+            } catch (error) {
+              console.error(`Could not parse npm audit report at ${path}:`, error);
+              process.exitCode = 1;
+              return {};
+            }
+          }
+
+          const reports = [
+            { scope: "all dependencies", report: readReport(process.argv[2]) },
+            { scope: "production dependencies", report: readReport(process.argv[3]) },
+          ];
+
+          for (const { scope, report } of reports) {
+            const totals = report.metadata?.vulnerabilities ?? {};
+            console.log(`Audit totals (${scope}):`, JSON.stringify(totals));
+            for (const [name, item] of Object.entries(report.vulnerabilities ?? {})) {
+              console.log(`- ${name}: severity=${item.severity}, direct=${item.isDirect}, range=${item.range}, fixAvailable=${JSON.stringify(item.fixAvailable)}`);
+              console.log("  via:", JSON.stringify(item.via));
+              for (const advisory of item.via ?? []) {
+                if (typeof advisory === "object") {
+                  console.log(`  advisory: ${advisory.title} | ${advisory.url}`);
+                }
               }
+            }
+            if ((totals.high ?? 0) > 0 || (totals.critical ?? 0) > 0) {
+              console.error(`Blocking high/critical vulnerability found in ${scope}.`);
+              process.exitCode = 1;
             }
           }
           NODE
