@@ -25,7 +25,8 @@ No Production deployment, database migration, destructive database operation, br
 | Development branch | `feat/project-29-12-hardening` | Contains Admin/Supabase implementation |
 | Vercel | `project-29-12` | Next.js project in team `velox19` |
 | Production deployment | `main` commit `6bac58068867f401e011fcf951cc42d550774411` | READY; older implementation |
-| Latest inspected Preview deployment | Development branch `feat/project-29-12-hardening` | READY; commit `346822dfd645f6c7589c63638beee34cf311d7fc`; build logs show compile, lint/type validation, static generation, and route output succeeded |
+| Parent hardening Preview | `feat/project-29-12-hardening` | READY; commit `346822dfd645f6c7589c63638beee34cf311d7fc` |
+| Latest follow-up Preview | `chore/project-29-12-ci-coverage` | READY; commit `279646088a0effe964442eab93cb4ec4b7c678a1`; compile and deployment succeeded |
 | Supabase | `zchqkhwprevcitfarkxa` | ACTIVE_HEALTHY |
 | Storage bucket | `project-2912-media` | Public read; Admin-restricted writes |
 
@@ -199,7 +200,9 @@ The original hardening changes listed below are on `feat/project-29-12-hardening
 - Changed Gallery query error handling to avoid reporting failed reads as successful loads.
 - Changed public content loading to respect intentionally empty Gallery/checkpoint lists.
 - Changed Gallery image, Mixtape audio, and cover uploads to create unique versioned Storage objects instead of overwriting assets already referenced by published content.
-- Updated `.github/workflows/quality.yml` on `chore/project-29-12-ci-coverage` so the typecheck, lint, and build workflow also runs for branch pushes, not only pushes to `main`.
+- Updated `.github/workflows/quality.yml` on `chore/project-29-12-ci-coverage` so the typecheck, lint, and build workflow runs for all branch pushes, not only pushes to `main`.
+- Changed CI from Node 20 to Node 26 to match the Vercel project runtime and the engine requirement of the installed Supabase JS package.
+- Replaced build-time `next/font/google` with four self-hosted Fontsource families (Cormorant Garamond, Playfair Display, Inter, Caveat), preserving current typography variables.
 - Added `PROJECT_29_12_PROGRESS.md` to record current infrastructure, verification, blockers, and next steps.
 
 No Supabase migration, database write, Admin allowlist change, PIN rotation, merge into `main`, or Production deployment was performed. The new CI run remains pending verification.
@@ -209,10 +212,13 @@ No Supabase migration, database write, Admin allowlist change, PIN rotation, mer
 - GitHub source files, branch metadata, commit history, Vercel project/deployment metadata, Vercel environment variable names, Supabase schema, RLS policies, Storage policies, Edge Function configuration, migration history, and advisors were inspected.
 - The latest inspected Preview deployment for `feat/project-29-12-hardening` is READY at commit `346822dfd645f6c7589c63638beee34cf311d7fc`. Its build logs show successful Next.js compilation, lint/type validation, static page generation, and route output for `/`, `/admin`, and `/_not-found`.
 - The GitHub combined commit status for that Preview commit reports the Vercel check as successful.
-- The CI trigger change on `chore/project-29-12-ci-coverage` is implemented but its GitHub Actions run and corresponding Preview deployment have not yet been verified.
+- GitHub Actions run `43585417036` on commit `279646088a0effe964442eab93cb4ec4b7c678a1` completed successfully: dependency installation, TypeScript check, ESLint, and production build all passed.
+- The matching Vercel Preview deployment `dpl_GieQRFcbRJSTJURc626TUGhQsSiv` is READY. Its logs confirm successful compilation, static generation, and deployment.
+- An earlier CI attempt failed in `next/font/google` while TypeScript and ESLint passed. Switching to self-hosted Fontsource assets removed that build-time network dependency.
 - Production deployment metadata reported READY and points to the older `main` commit.
-- Automated local `npm run typecheck`, `npm run lint`, and `npm run build` were not executed in this audit environment.
+- Automated local `npm run typecheck`, `npm run lint`, and `npm run build` were not executed in this audit environment. GitHub Actions ran all three checks successfully on the follow-up branch.
 - Live browser interaction tests could not be completed because browser access to the protected Vercel deployment was not available through the current inspection path. Do not infer that the login, media upload, or public site journeys passed.
+- Dependency installation reported 8 vulnerabilities (7 moderate, 1 high) and deprecated transitive packages. The install summary did not include package paths; a detailed dependency audit and a committed lockfile remain open.
 - The existing manual QA checklist remains the required release gate.
 
 ## 9. Next implementation priorities
