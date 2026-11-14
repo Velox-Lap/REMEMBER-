@@ -1,0 +1,2 @@
+[functions.project-2912-gateway]
+verify_jwt = false
