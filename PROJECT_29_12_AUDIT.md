@@ -5,7 +5,7 @@
 **Target repository:** `Velox-Lap/REMEMBER-`  
 **Target Vercel project:** `project-29-12`  
 **Target Supabase project:** `zchqkhwprevcitfarkxa`  
-**Audit mode:** Read-only infrastructure inspection plus non-destructive documentation/code corrections on `feat/project-29-12-hardening`.
+**Audit mode:** Read-only infrastructure inspection plus non-destructive documentation/code corrections on `feat/project-29-12-hardening`, with CI follow-up work isolated on `chore/project-29-12-ci-coverage`.
 
 ## 1. Executive summary
 
@@ -25,7 +25,7 @@ No Production deployment, database migration, destructive database operation, br
 | Development branch | `feat/project-29-12-hardening` | Contains Admin/Supabase implementation |
 | Vercel | `project-29-12` | Next.js project in team `velox19` |
 | Production deployment | `main` commit `6bac58068867f401e011fcf951cc42d550774411` | READY; older implementation |
-| Preview deployment | Development branch | READY deployments observed for earlier audit commits; a later documentation-only build was still BUILDING at the time of the last check |
+| Latest inspected Preview deployment | Development branch `feat/project-29-12-hardening` | READY; commit `346822dfd645f6c7589c63638beee34cf311d7fc`; build logs show compile, lint/type validation, static generation, and route output succeeded |
 | Supabase | `zchqkhwprevcitfarkxa` | ACTIVE_HEALTHY |
 | Storage bucket | `project-2912-media` | Public read; Admin-restricted writes |
 
@@ -189,7 +189,7 @@ The Storage bucket is public for playback by the recipient. Public read is inten
 
 ## 7. Changes made during this audit
 
-All modifications were made on `feat/project-29-12-hardening` only:
+The original hardening changes listed below are on `feat/project-29-12-hardening`. A follow-up branch, `chore/project-29-12-ci-coverage`, was created from that branch for additional CI coverage:
 
 - Redacted the exposed credential from the current Phase 1 status document.
 - Removed personal checkpoint values from the public QA checklist.
@@ -199,13 +199,17 @@ All modifications were made on `feat/project-29-12-hardening` only:
 - Changed Gallery query error handling to avoid reporting failed reads as successful loads.
 - Changed public content loading to respect intentionally empty Gallery/checkpoint lists.
 - Changed Gallery image, Mixtape audio, and cover uploads to create unique versioned Storage objects instead of overwriting assets already referenced by published content.
+- Updated `.github/workflows/quality.yml` on `chore/project-29-12-ci-coverage` so the typecheck, lint, and build workflow also runs for branch pushes, not only pushes to `main`.
+- Added `PROJECT_29_12_PROGRESS.md` to record current infrastructure, verification, blockers, and next steps.
 
-No Supabase migration, database write, Admin allowlist change, PIN rotation, branch merge, or Production deployment was performed.
+No Supabase migration, database write, Admin allowlist change, PIN rotation, merge into `main`, or Production deployment was performed. The new CI run remains pending verification.
 
 ## 8. Verification status and limitations
 
 - GitHub source files, branch metadata, commit history, Vercel project/deployment metadata, Vercel environment variable names, Supabase schema, RLS policies, Storage policies, Edge Function configuration, migration history, and advisors were inspected.
-- Vercel reported READY for earlier Preview deployments and the Vercel Git commit status was successful for those commits. A later Preview build was observed in BUILDING state; re-check the most recent deployment before treating the current HEAD as verified.
+- The latest inspected Preview deployment for `feat/project-29-12-hardening` is READY at commit `346822dfd645f6c7589c63638beee34cf311d7fc`. Its build logs show successful Next.js compilation, lint/type validation, static page generation, and route output for `/`, `/admin`, and `/_not-found`.
+- The GitHub combined commit status for that Preview commit reports the Vercel check as successful.
+- The CI trigger change on `chore/project-29-12-ci-coverage` is implemented but its GitHub Actions run and corresponding Preview deployment have not yet been verified.
 - Production deployment metadata reported READY and points to the older `main` commit.
 - Automated local `npm run typecheck`, `npm run lint`, and `npm run build` were not executed in this audit environment.
 - Live browser interaction tests could not be completed because browser access to the protected Vercel deployment was not available through the current inspection path. Do not infer that the login, media upload, or public site journeys passed.
@@ -213,13 +217,14 @@ No Supabase migration, database write, Admin allowlist change, PIN rotation, bra
 
 ## 9. Next implementation priorities
 
-1. Rotate the exposed Admin PIN and decide whether Git history needs a sensitive-data purge.
-2. Complete the private Admin allowlist and Supabase Auth redirect configuration using the owner's authorized email and Vercel domains.
-3. Verify the newest Preview build and run actual browser tests on desktop and mobile.
-4. Initialize published content and upload only approved recipient-facing media.
-5. Resolve remaining functional/accessibility defects found during QA.
-6. Obtain explicit owner approval after reviewing the recipient-facing Preview.
-7. Merge/promote the tested branch, then verify the actual Production URL and critical workflows.
+1. Verify the new branch-push GitHub Actions run and its Vercel Preview deployment.
+2. Rotate the exposed Admin PIN and decide whether Git history needs a sensitive-data purge.
+3. Complete the private Admin allowlist and Supabase Auth redirect configuration using the owner's authorized email and Vercel domains.
+4. Run actual browser tests on desktop and mobile against the latest Preview.
+5. Initialize published content and upload only approved recipient-facing media.
+6. Resolve remaining functional/accessibility defects found during QA.
+7. Obtain explicit owner approval after reviewing the recipient-facing Preview.
+8. Merge/promote the tested branch, then verify the actual Production URL and critical workflows.
 
 ## 10. Owner actions required
 
