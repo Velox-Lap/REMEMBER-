@@ -141,6 +141,9 @@ export function AdminConsole() {
         setUnlocked(false);
         setPin("");
         setPinExpiresAt(null);
+        setRotationCurrentPin("");
+        setRotationNewPin("");
+        setRotationConfirmPin("");
       }
     });
     return () => {
@@ -155,6 +158,9 @@ export function AdminConsole() {
       setUnlocked(false);
       setPin("");
       setPinExpiresAt(null);
+      setRotationCurrentPin("");
+      setRotationNewPin("");
+      setRotationConfirmPin("");
       setStatus("หมดเวลาปลดล็อก 15 นาทีแล้ว กรุณากรอกรหัส Admin PIN อีกครั้ง");
     }, Math.max(0, pinExpiresAt * 1000 - Date.now()));
     return () => window.clearTimeout(timeout);
@@ -306,19 +312,27 @@ export function AdminConsole() {
 
     setBusy(true);
     setStatus("กำลังตรวจสอบ PIN เดิมและเปลี่ยนรหัส...");
-    const { data, error } = await client.functions.invoke("project-2912-gateway", {
-      body: {
-        action: "rotate_admin_pin",
-        currentPin: rotationCurrentPin,
-        newPin: rotationNewPin,
-      },
-    });
+    let data: { rotated?: boolean; error?: string } | null = null;
+    let requestFailed = false;
+    try {
+      const result = await client.functions.invoke("project-2912-gateway", {
+        body: {
+          action: "rotate_admin_pin",
+          currentPin: rotationCurrentPin,
+          newPin: rotationNewPin,
+        },
+      });
+      data = result.data;
+      requestFailed = Boolean(result.error);
+    } catch {
+      requestFailed = true;
+    }
 
     setRotationCurrentPin("");
     setRotationNewPin("");
     setRotationConfirmPin("");
 
-    if (error || data?.rotated !== true) {
+    if (requestFailed || data?.rotated !== true) {
       setBusy(false);
       const message = data?.error === "current_pin_invalid"
         ? "PIN ปัจจุบันไม่ถูกต้อง หรือเกินจำนวนครั้งที่อนุญาต"
