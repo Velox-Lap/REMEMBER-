@@ -89,3 +89,16 @@ Run this checklist against the latest Vercel Preview URL before merging or promo
 - Audio uploads are constrained by the Storage bucket's 25 MiB limit; the Admin UI applies a lower per-file limit.
 - Audio and cover uploads are stored immediately, but the public page starts using new media only after Admin saves the Mixtape content. Versioned replacement uploads intentionally leave the previous Storage object intact until the new metadata is published. Replacing or removing Gallery/Mixtape media may leave old Storage objects behind; cleanup should follow confirmation that the new version is published.
 - Admin login requires a confirmed email present in the private allowlist, followed by the Admin PIN. The allowlist is intentionally empty until the owner provides the exact address through a private channel.
+
+
+## Admin PIN rotation — owner-run security test
+- [ ] Confirm the Security tab is visible only after an authorized Admin has completed Magic Link activation and the current PIN unlock.
+- [ ] Confirm the current PIN accepts 4–12 numeric digits and the replacement PIN accepts 6–12 numeric digits.
+- [ ] Confirm a new PIN that matches the current PIN is rejected.
+- [ ] Confirm mismatched new-PIN confirmation is rejected without making a server request.
+- [ ] Confirm an incorrect current PIN is rejected and existing rate limiting still applies.
+- [ ] Confirm a successful rotation stores only a bcrypt hash; no PIN value appears in browser storage, application logs, analytics, or repository files.
+- [ ] Confirm the current elevated PIN-unlock window is cleared after a successful rotation.
+- [ ] Confirm the old PIN no longer unlocks Admin and the new PIN unlocks Admin after a fresh request.
+- [ ] Confirm all rotation input fields are cleared after submission and the user receives a safe success/failure message.
+- [ ] Confirm a failed rotation after the unlock claim is cleared requires re-authentication and does not leave the previous elevated window active.
