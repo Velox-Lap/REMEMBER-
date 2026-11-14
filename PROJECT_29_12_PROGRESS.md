@@ -4,7 +4,7 @@
 **Working branch:** `chore/project-29-12-ci-coverage`
 **Parent development branch:** `feat/project-29-12-hardening`
 **Parent HEAD at branch creation:** `346822dfd645f6c7589c63638beee34cf311d7fc`
-**Latest commit in this progress branch:** `9b661c1570ff0f296d92b081c190c169c3bf6ab6`
+**Latest implementation commit recorded:** `279646088a0effe964442eab93cb4ec4b7c678a1`
 
 ## 1. Current state
 
@@ -32,7 +32,9 @@ The development branch `feat/project-29-12-hardening` is 83 commits ahead of `ma
 | Inspect Storage and Edge Function configuration | INSPECTED | Public media bucket and `project-2912-gateway` version 5 inspected |
 | Review Supabase advisors | INSPECTED | Security, performance, and health advisors reviewed |
 | Verify current Preview build logs | VERIFIED | Build compiled, lint/type validation ran, static page generation completed, and routes were emitted |
-| Extend GitHub quality workflow | IMPLEMENTED | Quality checks now run on any branch push; PR checks still target `main` |
+| Extend GitHub quality workflow | VERIFIED | Quality checks run on every branch push; latest full run passed on Node 26 |
+| Remove build-time Google Fonts dependency | VERIFIED | Four Fontsource families self-hosted; Preview build succeeds without `next/font/google` fetch |
+| Align CI runtime | VERIFIED | Node 26, matching the Vercel project runtime and current LTS line |
 | Create persistent progress document | IMPLEMENTED | This file |
 
 ## 3. Current deployment evidence
@@ -94,20 +96,29 @@ Only the older `main` commit is in Production. The hardening branch remains a Pr
 
 ## 6. Database and application changes
 
-No database DDL, migration, data write, storage upload/deletion, allowlist change, PIN rotation, production deployment, or branch merge was performed in this session.
+No database DDL, migration, data write, storage upload/deletion, allowlist change, PIN rotation, Production deployment, or merge into `main` was performed in this session.
 
-No application source code was changed in this session. The only code change so far is the GitHub Actions trigger configuration described below.
+### CI and build reliability changes
 
-### CI change
+- `.github/workflows/quality.yml` now runs on every branch push and retains pull-request checks targeting `main`.
+- CI now uses Node 26. The prior Node 20 setting was below the engine requirement of the installed Supabase JS 2.119.0 packages and was end-of-life; Node 26 matches the Vercel project runtime.
+- Replaced build-time `next/font/google` imports with locally bundled Fontsource packages for Cormorant Garamond, Playfair Display, Inter, and Caveat. Existing family names and CSS-variable usage are preserved.
+- Added the four Fontsource packages at version `5.3.0`.
+- Latest GitHub Actions run `43585417036` completed successfully: dependency installation, TypeScript check, ESLint, and production build all passed.
+- Matching Vercel Preview deployment `dpl_GieQRFcbRJSTJURc626TUGhQsSiv` reached `READY`.
 
-`.github/workflows/quality.yml` previously ran on pushes to `main` only and on pull requests targeting `main`. It now runs the same typecheck, lint, and build job on every branch push while retaining pull-request checks against `main`.
+An earlier CI run failed in Next.js `next/font/google` with a Google Font response parsing error, while TypeScript and ESLint passed. The local-font change removed this build-time external network dependency, and the latest CI and Preview succeeded.
 
-The change is implemented but the new workflow run has not yet been verified. The workflow still uses `npm install --no-package-lock`; lack of a committed package-manager lockfile remains a reproducibility issue to address separately.
+### Remaining engineering debt
+
+- No committed package-manager lockfile exists; installs still use `npm install --no-package-lock`, so dependency resolution is not fully reproducible.
+- The successful install reported 8 dependency vulnerabilities (7 moderate, 1 high) and several deprecated transitive packages. The install summary did not identify the affected package paths; run a detailed dependency audit before release.
+- No local build was run in this session; the passing verification is from GitHub Actions and Vercel build logs.
 
 ## 7. Next actions
 
-1. Verify the GitHub Actions run and Vercel Preview created from the CI-change branch.
-2. Inspect any CI or deployment failures and fix only confirmed issues.
+1. Integrate the verified CI/font changes into `feat/project-29-12-hardening` after reviewing the follow-up branch diff.
+2. Add a committed lockfile and investigate the 1 high / 7 moderate dependency audit findings.
 3. Review the complete Admin and public experience using an authenticated browser session.
 4. Rotate the leaked Admin PIN securely; resolve the public-history remediation decision.
 5. Authorize the Admin email privately and verify Supabase Auth redirects.
