@@ -136,6 +136,12 @@ The Storage bucket is public for playback by the recipient. Public read is inten
 - **Action completed:** A Gallery read error now stops loading and reports the failure explicitly.
 - **Status:** IMPLEMENTED; runtime verification still required.
 
+**DATA-005 — Replacing a media object could change the published asset before Save**
+- **Evidence:** Previous upload paths reused the same object key with overwrite enabled for Gallery images, Mixtape tracks, and Mixtape cover art.
+- **Impact:** Replacing a file could change the asset already referenced by the public page before the new content metadata was saved.
+- **Action completed:** Uploads now use unique versioned object paths and do not overwrite existing objects. The new path becomes part of the draft state; publishing still depends on saving the related content/Gallery record.
+- **Status:** IMPLEMENTED; runtime verification still required.
+
 **DATA-004 — Empty published lists could resurrect local defaults**
 - **Evidence:** The public content loader only replaced checkpoint prompts when the database returned a non-empty list. An intentionally empty active list could therefore display default prompts.
 - **Action completed:** Successful memory/question queries now replace the corresponding lists even when the result is empty.
@@ -192,6 +198,7 @@ All modifications were made on `feat/project-29-12-hardening` only:
 - Changed Gallery save ordering to reduce partial deletion risk.
 - Changed Gallery query error handling to avoid reporting failed reads as successful loads.
 - Changed public content loading to respect intentionally empty Gallery/checkpoint lists.
+- Changed Gallery image, Mixtape audio, and cover uploads to create unique versioned Storage objects instead of overwriting assets already referenced by published content.
 
 No Supabase migration, database write, Admin allowlist change, PIN rotation, branch merge, or Production deployment was performed.
 
